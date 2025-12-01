@@ -1485,29 +1485,40 @@
             });
         })();
 
-// --- NEW DOWNLOAD & COUNTER LOGIC ---
+// --- NEW DOWNLOAD & COUNTER LOGIC (CORRECTED) ---
         window.refreshDlCount = () => {
-            fetch('https://api.counterapi.dev/v1/shnopia_sle/downloads/')
-            .then(r=>r.json()).then(d=>{
+            // On vise une clé spécifique pour la V8
+            fetch('https://api.counterapi.dev/v1/shnopia_sle/dl_v8_final/')
+            .then(r => r.json())
+            .then(d => {
                 const el = document.getElementById('dl-counter-display');
-                if(el) el.innerText = "OFFLINE ACCESS: #" + d.count;
-            }).catch(e=>{});
-        };
-
-        window.triggerDownload = (btn) => {
-            // Visual Flash
-            btn.classList.add('flash'); 
-            setTimeout(()=>btn.classList.remove('flash'), 500);
-            
-            // Increment Counter
-            fetch('https://api.counterapi.dev/v1/shnopia_sle/downloads/up')
-            .then(r=>r.json()).then(d=>{
+                // Si la clé n'existe pas encore, d.count est undefined, on met 0
+                const count = (d.count !== undefined) ? d.count : 0;
+                if(el) el.innerText = "OFFLINE ACCESS: #" + count;
+            })
+            .catch(e => {
+                // Si erreur (bloqueur de pub ou réseau), on affiche N/A proprement
                 const el = document.getElementById('dl-counter-display');
-                if(el) el.innerText = "OFFLINE ACCESS: #" + d.count;
+                if(el) el.innerText = "OFFLINE ACCESS: N/A"; 
             });
         };
 
-        // Override setLangGlobal to include counter refresh
+        window.triggerDownload = (btn) => {
+            // Animation visuelle
+            btn.classList.add('flash'); 
+            setTimeout(()=>btn.classList.remove('flash'), 500);
+            
+            // Incrémentation (+1)
+            fetch('https://api.counterapi.dev/v1/shnopia_sle/dl_v8_final/up')
+            .then(r => r.json())
+            .then(d => {
+                const el = document.getElementById('dl-counter-display');
+                if(el && d.count !== undefined) el.innerText = "OFFLINE ACCESS: #" + d.count;
+            })
+            .catch(e => console.log("Compteur bloqué par le navigateur"));
+        };
+
+        // Override setLangGlobal pour afficher le compteur au changement de langue
         const originalSetLang = window.setLangGlobal;
         window.setLangGlobal = function(lang) {
             CURRENT_LANG = lang;
@@ -1518,8 +1529,9 @@
                     const key = el.getAttribute('data-tr');
                     if(d[key]) el.innerText = d[key];
                 });
-                // Inject Help Content + Refresh Counter
+                // Injection du contenu d'aide
                 document.getElementById('help-content').innerHTML = d.HELP_CONTENT;
+                // Lancement du rafraîchissement du compteur
                 setTimeout(refreshDlCount, 100); 
             }
             const txtBtn = document.getElementById('btn-text-toggle');
