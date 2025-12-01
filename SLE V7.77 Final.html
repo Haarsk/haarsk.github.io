@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Professional Screen Light | Shnopia V7.77</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Orbitron:wght@500;900&family=Anton&family=Bebas+Neue&family=Press+Start+2P&family=Lobster&family=Pacifico&family=Bangers&family=Creepster&family=Monoton&family=Audiowide&family=Black+Ops+One&family=Syncopate&family=VT323&family=Righteous&family=Fredoka+One&family=Luckiest+Guy&family=Russo+One&family=Special+Elite&family=Wallpoet&display=swap" rel="stylesheet">
+    <style>
+        /* --- CORE --- */
+        :root { 
+            --panel-bg: rgba(10, 15, 10, 0.98); 
+            --accent: #f5a623; 
+            --text: #e0e0e0; 
+            --danger: #ff0000; 
+            --success: #00ff00; 
+            --lcd-bg: #001100; 
+            --lcd-off: #003300; 
+            --lcd-on: #33ff33; 
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Roboto Mono', monospace; color: var(--text); user-select: none; -webkit-user-select: none; overscroll-behavior: none; }
+
+        /* --- LAYERS --- */
+        #light-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; image-rendering: pixelated; }
+        #text-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; pointer-events: auto; }
+
+        /* --- STARTUP OVERLAY --- */
+        #startup-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 10000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            cursor: pointer; transition: opacity 0.5s ease-out; backdrop-filter: blur(10px);
+        }
+        
+        .intro-lang-bar {
+            display: flex; gap: 15px; margin-bottom: 20px; z-index: 10001;
+            flex-wrap: wrap; justify-content: center;
+        }
+        .intro-lang-btn {
+            font-family: 'Orbitron'; font-size: 14px; color: #004400; 
+            border: 1px solid #004400; background: #001100; padding: 5px 10px; 
+            cursor: pointer; border-radius: 4px; transition: 0.2s; font-weight: bold;
+        }
+        .intro-lang-btn:hover { color: #fff; border-color: #fff; transform: scale(1.1); }
+        .intro-lang-btn.active { color: var(--lcd-on); border-color: var(--lcd-on); box-shadow: 0 0 10px var(--lcd-on); background: #002200; }
+
+        .startup-box {
+            background: var(--panel-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid #333; border-radius: 12px;
+            width: 95%; max-width: 600px; height: 95vh; max-height: 950px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 40px; text-align: center;
+            box-shadow: 0 40px 100px #000;
+            pointer-events: none; 
+            position: relative;
+        }
+        .startup-box::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: linear-gradient(90deg, #004400, var(--lcd-on), #004400); opacity: 0.5; }
+        .startup-box::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: #004400; }
+
+        .startup-title {
+            font-family: 'Orbitron'; font-size: 24px; color: var(--lcd-on);
+            margin-bottom: 30px; font-weight: 900; letter-spacing: 2px;
+            text-shadow: 0 0 15px var(--lcd-on); text-transform: uppercase;
+        }
+        .startup-text {
+            font-family: 'Roboto Mono'; font-size: 14px; color: #e0e0e0;
+            line-height: 1.8; margin-bottom: 50px; text-align: justify;
+            max-width: 90%;
+        }
+        .startup-hint {
+            font-family: 'Orbitron'; font-size: 12px; color: #888;
+            animation: pulse 1s infinite alternate; letter-spacing: 1px;
+            border: 1px solid #444; padding: 10px 20px; border-radius: 4px; background: #000;
+        }
+
+        /* --- PANEL --- */
+        .control-panel {
+            position: absolute; pointer-events: auto; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: var(--panel-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid #333; border-radius: 12px; width: 95%; max-width: 600px; height: 95vh; max-height: 950px;
+            display: flex; flex-direction: column; box-shadow: 0 40px 100px #000; overflow: hidden; transition: opacity 0.3s, transform 0.3s; z-index: 2000;
+        }
+        .control-panel.hidden { opacity: 0; pointer-events: none; transform: translate(-50%, -50%) scale(0.9); }
+        
+        @media (max-width: 768px) {
+            .control-panel { width: 100%; height: 100dvh; max-width: none; max-height: none; top: 0; left: 0; transform: none; border-radius: 0; border: none; }
+            .startup-box { width: 100%; height: 100dvh; max-width: none; max-height: none; border-radius: 0; border: none; border-bottom: 2px solid var(--lcd-on); }
+            .control-panel.hidden { transform: translateY(100%); opacity: 0; }
+            .drag-bar { display: none !important; }
+            .panel-header { padding: 5px 10px; height: 45px; }
+            .startup-box { padding: 20px; }
+            .startup-title { font-size: 20px; }
+            .startup-text { font-size: 12px; }
+            .intro-lang-bar { margin-top: 20px; }
+        }
+
+        /* --- SCROLLBAR --- */
+        .panel-content::-webkit-scrollbar { width: 8px; }
+        .panel-content::-webkit-scrollbar-track { background: #0a1a0a; border-left: 1px solid #333; }
+        .panel-content::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; border: 1px solid #000; }
+        .panel-content::-webkit-scrollbar-thumb:hover { background: var(--lcd-on); }
+
+        /* --- HEADER --- */
+        .drag-bar { height: 15px; background: linear-gradient(to bottom, #1a2a1a, #0a1a0a); border-bottom: 1px solid #004400; cursor: grab; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
+        .drag-bar:active { cursor: grabbing; }
+        .grip-lines { width: 50px; height: 100%; background-image: repeating-linear-gradient(90deg, transparent, transparent 2px, #005500 2px, #005500 3px); opacity: 0.5; }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: #051105; border-bottom: 1px solid #004400; flex-shrink: 0; height: 50px; }
+        .app-title { font-family: 'Orbitron'; font-weight: 900; font-size: 14px; letter-spacing: 1px; color: var(--lcd-on); text-shadow: 0 0 5px var(--lcd-on); margin-right: auto; }
+        
+        .header-controls { display: flex; align-items: center; }
+        .lang-icon { font-size: 18px; margin-right: 10px; cursor: pointer; text-shadow: 0 0 5px #0f0; transition: transform 0.2s; position: relative; }
+        .lang-icon:hover { transform: scale(1.2); }
+        
+        #lang-menu { position: absolute; top: 40px; right: 100px; background: #002200; border: 1px solid #0f0; border-radius: 4px; display: none; flex-direction: column; z-index: 3000; box-shadow: 0 5px 15px rgba(0,0,0,0.8); }
+        #lang-menu.show { display: flex; }
+        .lang-option { padding: 8px 15px; color: #fff; font-family: 'Orbitron'; font-size: 10px; cursor: pointer; border-bottom: 1px solid #004400; text-align: left; }
+        .lang-option:hover { background: #004400; color: #0f0; }
+
+        .header-preview-box { width: 50px; height: 28px; background: #000; border: 1px solid #00ff00; border-radius: 3px; margin-right: 10px; cursor: pointer; overflow: hidden; }
+        #preview-canvas { width: 100%; height: 100%; display: block; object-fit: contain; }
+        .preview-container { display: flex; align-items: center; margin-right: 10px; }
+        .preview-label { font-family: 'Orbitron'; font-size: 9px; color: #008800; margin-right: 5px; font-weight: bold; }
+        .hide-btn { background: #002200; border: 1px solid #005500; color: #00aa00; font-family: 'Orbitron'; font-size: 9px; font-weight: bold; padding: 4px 8px; border-radius: 4px; cursor: pointer; height: 26px; }
+
+        /* --- TABS --- */
+        .tabs { display: flex; background: #051105; flex-shrink: 0; border-bottom: 1px solid #004400; overflow-x: auto; height: 36px; }
+        .tabs::-webkit-scrollbar { display: none; }
+        .tab-btn { flex: 1; padding: 0 5px; min-width: 50px; background: transparent; border: none; color: #006600; font-family: inherit; font-weight: bold; font-size: 10px; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s; white-space: nowrap; }
+        .tab-btn.active { color: var(--lcd-on); text-shadow: 0 0 3px var(--lcd-on); border-bottom: 3px solid var(--lcd-on); background: #002200; }
+
+        /* --- CONTENT --- */
+        .panel-content { flex: 1; padding: 15px; display: none; flex-direction: column; overflow-y: auto; background: #020a02; min-height: 0; }
+        .panel-content.visible { display: flex; }
+
+        /* --- LCD INPUTS & SLIDERS --- */
+        .control-group { margin-bottom: 12px; flex-shrink: 0; }
+        .label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 9px; color: #00aa00; font-weight: bold; font-family: 'Orbitron'; }
+        
+        .lcd-input {
+            background: var(--lcd-bg); color: var(--lcd-on);
+            font-family: 'Orbitron', monospace; font-size: 10px;
+            padding: 2px 6px; border-radius: 2px; border: 1px solid #004400;
+            box-shadow: inset 0 0 5px rgba(0, 255, 0, 0.2);
+            width: 50px; text-align: right; letter-spacing: 1px;
+            -moz-appearance: textfield; 
+        }
+        .lcd-input::-webkit-outer-spin-button, .lcd-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .lcd-input:focus { outline: 1px solid var(--lcd-on); background: #002200; }
+
+        .color-r { color: #ff3333 !important; border-color: #ff3333 !important; text-shadow: 0 0 2px #500; }
+        .color-g { color: #33ff33 !important; border-color: #33ff33 !important; text-shadow: 0 0 2px #050; }
+        .color-b { color: #3388ff !important; border-color: #3388ff !important; text-shadow: 0 0 2px #005; }
+
+        /* SLIDERS STYLING */
+        input[type=range] { 
+            -webkit-appearance: none; width: 100%; background: transparent; margin: 0; touch-action: none; display: block; height: 24px; cursor: pointer; 
+            border: 1px solid var(--lcd-on); background-color: var(--lcd-bg); border-radius: 2px; box-shadow: 0 0 5px rgba(51, 255, 51, 0.1); padding: 0; 
+            background-repeat: no-repeat; 
+        }
+        input[type=range]:focus { outline: none; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 100%; background: transparent; border: none; }
+        input[type=range]::-webkit-slider-thumb { 
+            -webkit-appearance: none; height: 100%; width: 10px; background: var(--lcd-on); border: 1px solid #fff; 
+            border-radius: 1px; margin-top: 0; box-shadow: 0 0 8px var(--lcd-on); 
+        }
+
+        #input-r { border-color: #ff3333; } #input-r::-webkit-slider-thumb { background: #ff3333; box-shadow: 0 0 8px #ff3333; }
+        #input-g { border-color: #33ff33; } #input-g::-webkit-slider-thumb { background: #33ff33; box-shadow: 0 0 8px #33ff33; }
+        #input-b { border-color: #3388ff; } #input-b::-webkit-slider-thumb { background: #3388ff; box-shadow: 0 0 8px #3388ff; }
+        #input-white-r { border-color: #ff3333; } #input-white-r::-webkit-slider-thumb { background: #ff3333; box-shadow: 0 0 8px #ff3333; }
+        #input-white-g { border-color: #33ff33; } #input-white-g::-webkit-slider-thumb { background: #33ff33; box-shadow: 0 0 8px #33ff33; }
+        #input-white-b { border-color: #3388ff; } #input-white-b::-webkit-slider-thumb { background: #3388ff; box-shadow: 0 0 8px #3388ff; }
+        
+        .modifier-slider.active input[type=range] { box-shadow: 0 0 10px var(--lcd-on); }
+
+        /* --- BUTTON STYLES --- */
+        .momentary-btn {
+            background: #002200; color: #00aa00; border: 1px solid #005500;
+            font-family: 'Orbitron'; font-weight: bold; cursor: pointer; border-radius: 3px; 
+            font-size: 10px; text-transform: uppercase; transition: 0.1s;
+        }
+        .momentary-btn:hover { background: #003300; color: #fff; }
+        .momentary-btn:active { 
+            background: #00ff00 !important; color: #000 !important; border-color: #fff !important; 
+            box-shadow: 0 0 15px #00ff00 !important; transform: scale(0.98);
+        }
+
+        .preset-btn { 
+            flex: 1; border: 1px solid #444; color: #000; 
+            padding: 10px 0; border-radius: 4px; font-size: 12px; font-weight: 900; 
+            cursor: pointer; text-align: center; min-width: 50px; transition: 0.2s;
+            font-family: 'Orbitron'; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+        .k2700 { background-color: #ffb46b; }
+        .k3200 { background-color: #ffd1a3; }
+        .k4300 { background-color: #ffebd1; }
+        .k5600 { background-color: #ffffff; }
+        .k6500 { background-color: #cfe7ff; }
+
+        .preset-btn:hover { filter: brightness(1.2); }
+        .preset-btn.active { border: 2px solid #00ff00; box-shadow: 0 0 15px #00ff00, inset 0 0 5px #fff; transform: scale(1.05); z-index: 10; }
+
+        .activate-btn { width: 100%; padding: 8px; margin-top: 8px; font-size: 11px; flex-shrink: 0; }
+        .recall-btn { width: 100%; padding: 6px; margin-top: 8px; font-size: 10px; flex-shrink: 0; }
+        .memory-save-btn { flex: 1; font-size: 8px; }
+        .live-save-btn { flex: 1; font-size: 8px; transition: background 0.1s; }
+        .live-save-btn.saving-red { background: #ff0000 !important; color: #fff !important; box-shadow: 0 0 15px #ff0000 !important; border-color: #fff !important; }
+        .blackout-btn { background: #300; color: #700; border: 1px solid #500; flex: 1.2; }
+        .blackout-btn.active { background: var(--danger); color: white; border-color: #fff; box-shadow: 0 0 10px var(--danger); animation: pulse 0.5s infinite alternate; }
+        
+        .fullscreen-btn { background: #002200; color: #050; border: 2px solid #050; flex: 1; transition: background 0.2s, color 0.2s; }
+        .fullscreen-btn.active { background: #006600 !important; color: #fff !important; border-color: #00ff00 !important; box-shadow: 0 0 15px #00ff00; text-shadow: 0 0 5px #fff; }
+        
+        @keyframes blink-3-times {
+            0%, 100% { background-color: #002200; border-color: #050; color: #050; }
+            50% { background-color: #00ff00; border-color: #fff; color: #000; box-shadow: 0 0 20px #00ff00; }
+        }
+        .blink-trigger { animation: blink-3-times 0.4s 3 forwards; }
+
+        .presets-row { display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap; }
+        @keyframes pulse { from { opacity: 1; } to { opacity: 0.7; } }
+
+        /* --- MODULES --- */
+        .wheel-wrapper { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 140px; }
+        .wheel-container { position: relative; width: min(200px, 35vh); height: min(200px, 35vh); border-radius: 50%; background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red); box-shadow: inset 0 0 30px rgba(0,0,0,0.4), 0 0 10px #000; cursor: crosshair; touch-action: none; border: 2px solid #333; }
+        .wheel-container::after { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; border-radius: 50%; background: radial-gradient(circle, white 0%, transparent 70%); pointer-events: none; }
+        .wheel-cursor { position: absolute; width: 14px; height: 14px; border: 2px solid #000; background: rgba(255,255,255,0.8); border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; box-shadow: 0 0 5px #000; }
+        .rgb-section { margin-top: 10px; }
+        .hex-input { width: 100%; text-align: center; font-family: 'Roboto Mono'; font-weight: bold; font-size: 14px; background: #002200; color: var(--lcd-on); padding: 6px; margin-top: 4px; border-radius: 2px; border: 1px solid #005500; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 2px; }
+
+        .memory-section { margin-top: auto; padding-top: 10px; flex-shrink: 0; }
+        .memory-label { font-size: 8px; color: #008800; text-align: center; margin-bottom: 4px; font-family: 'Orbitron'; }
+        .memory-row { display: flex; gap: 6px; justify-content: space-between; height: 60px; }
+        .memory-slot { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+        .memory-display-box { flex: 2; border: 1px solid #004400; border-radius: 4px; cursor: pointer; background: #001100; box-shadow: inset 0 0 5px rgba(0,0,0,0.5); }
+        .memory-display-box:active { border-color: #fff; transform: scale(0.98); }
+        
+        /* --- LIVE PAGE --- */
+        .live-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; flex: 1; overflow-y: auto; padding: 5px; align-content: start; }
+        .live-slot { display: flex; flex-direction: column; gap: 2px; aspect-ratio: 1/1.2; position: relative; }
+        .live-pad { flex: 4; background: #001100; border: 1px solid #004400; border-radius: 4px; cursor: pointer; box-shadow: inset 0 0 10px rgba(0,0,0,0.8); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .live-pad::after { content: ''; position: absolute; top:0; left:0; right:0; bottom:0; border: 1px solid transparent; transition: 0.2s; pointer-events: none; }
+        .live-pad:active { transform: scale(0.98); border-color: #fff; }
+        .live-pad.active-preset { border-color: var(--lcd-on); box-shadow: 0 0 15px var(--lcd-on); }
+        .pad-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; pointer-events: none; }
+        .empty-pad-text { font-size: 8px; color: #003300; font-family: 'Orbitron'; pointer-events: none; }
+
+        /* --- FX GRIDS --- */
+        .fx-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; flex: 1; overflow-y: auto; padding-right: 2px; align-content: start; min-height: 0; }
+        .fx-card { background: #001a00; border: 1px solid #003300; border-radius: 4px; padding: 0; text-align: center; cursor: pointer; height: 35px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #008800; }
+        .fx-card span { font-size: 11px; font-weight: bold; text-transform: uppercase; line-height: 1; pointer-events: none; }
+        .fx-card.active { background: var(--lcd-on); color: #000; border-color: var(--lcd-on); box-shadow: 0 0 10px var(--lcd-on); }
+        .palette-container { display: flex; gap: 4px; justify-content: space-between; background: #051105; padding: 4px; border-radius: 4px; border: 1px solid #004400; margin-top: 4px; flex-shrink: 0; }
+        .palette-item { display: flex; flex-direction: column; gap: 2px; align-items: center; flex: 1; cursor: pointer; }
+        .palette-toggle { width: 100%; height: 6px; background: #002200; border: 1px solid #004400; border-radius: 2px; pointer-events: none; }
+        .palette-toggle.active { background: #0f0; border-color: #0f0; box-shadow: 0 0 4px #0f0; }
+        .palette-display { width: 100%; height: 16px; border-radius: 2px; border: 1px solid #004400; pointer-events: none; }
+
+        /* --- MATRIX --- */
+        .matrix-section { flex: 1; display: flex; flex-direction: column; gap: 10px; overflow: hidden; background: #051105; border: 1px solid #004400; border-radius: 4px; padding: 10px; }
+        .mapping-list { flex: 1.5; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(5, 1fr); gap: 5px; overflow-y: auto; }
+        .map-btn { background: #002200; border: 1px solid #004400; color: #008800; padding: 0 5px; border-radius: 3px; font-size: 12px; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .map-btn span { display: block; line-height: 1.1; font-weight: bold; }
+        .map-btn.active-map { background: #004400; color: #0f0; border-color: #0f0; box-shadow: 0 0 10px rgba(0,255,0,0.5); text-shadow: 0 0 2px #0f0; }
+        .map-set-display { font-family: 'Orbitron'; color: #0f0; font-size: 9px; margin-top: 2px; }
+        .modifiers-container { flex: 1; display: flex; flex-direction: column; justify-content: space-evenly; border-top: 1px solid #004400; padding-top: 5px; }
+
+        /* --- TEXT --- */
+        .text-input-wrapper { background: #fff; padding: 5px; border-radius: 4px; border: 1px solid #000; }
+        #text-content { width: 100%; border: none; outline: none; font-family: 'Roboto Mono', monospace; font-size: 16px; font-weight: bold; color: #000; background: transparent; text-transform: uppercase; }
+        .text-toggle-btn { width: 100%; padding: 10px; margin-top:10px; border-radius: 6px; background: #002200; color: #008800; border: 2px solid #004400; font-weight: bold; font-family: 'Orbitron'; font-size: 14px; cursor: pointer; transition: 0.2s; }
+        .text-toggle-btn.active { background: #004400; color: #0f0; border-color: #0f0; box-shadow: 0 0 10px rgba(0,255,0,0.5); }
+        .dropdown { width: 100%; background: #002200; color: #0f0; border: 1px solid #004400; padding: 5px; font-family: 'Roboto Mono'; font-size: 11px; border-radius: 3px; margin-top: 2px; }
+        
+        /* --- FOOTER --- */
+        .panel-footer { padding: 10px 15px; background: #051105; border-top: 1px solid #004400; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+        .footer-buttons { display: flex; gap: 8px; height: 36px; }
+        .led-btn { flex: 1; border-radius: 4px; font-weight: 900; cursor: pointer; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; text-align: center; }
+        .signature { text-align: center; font-size: 8px; color: #004400; margin-top: 2px; font-family: 'Orbitron'; opacity: 0.8; }
+        
+       /* HELP STYLES & FEEDBACK */
+        .help-signature { font-family: 'Orbitron'; font-size: 12px; color: var(--lcd-on); text-align: center; margin-bottom: 15px; border-bottom: 1px solid #004400; padding-bottom: 10px; }
+        .help-section { margin-bottom: 25px; border-bottom: 1px solid #003300; padding-bottom: 15px; }
+        .help-title { color: #fff; font-family: 'Orbitron'; font-size: 12px; margin-bottom: 8px; font-weight: 900; letter-spacing: 1px; text-shadow: 0 0 5px #005500; }
+        .help-text { font-size: 10px; color: #00aa00; line-height: 1.6; text-align: justify; font-family: 'Roboto Mono'; }
+        .help-text strong { color: var(--lcd-on); }
+        
+        .rossignol-box { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            margin: 20px auto 40px auto; padding: 30px; 
+            background: #001100; border-radius: 12px; border: 2px solid var(--lcd-on); 
+            box-shadow: 0 0 25px rgba(51, 255, 51, 0.2); width: 95%; 
+        }
+        .rossignol-brand { 
+            font-family: 'Orbitron'; font-size: 20px; color: var(--lcd-on); 
+            display: flex; align-items: center; gap: 15px; font-weight: 900; text-shadow: 0 0 10px var(--lcd-on); 
+        }
+        .rossignol-icon { font-size: 32px; filter: drop-shadow(0 0 5px var(--lcd-on)); }
+
+        .feedback-section { width: 95%; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
+        .feedback-label { font-family: 'Orbitron'; font-size: 11px; color: #00aa00; text-align: center; margin-bottom: 5px; font-weight: bold; letter-spacing: 1px; }
+        .feedback-input { 
+            width: 100%; height: 80px; background: #000500; border: 1px solid #004400; color: #0f0; 
+            font-family: 'Roboto Mono'; font-size: 12px; padding: 10px; border-radius: 4px; resize: none; margin-bottom: 5px;
+        }
+        .feedback-input:focus { outline: none; border-color: var(--lcd-on); box-shadow: 0 0 10px rgba(51, 255, 51, 0.3); }
+        .feedback-btn { 
+            padding: 12px; font-size: 12px; width: 100%; border-radius: 4px; 
+            background: #003300; border: 1px solid #006600; color: #fff; cursor: pointer; 
+            font-family: 'Orbitron'; font-weight: 900; transition: 0.2s; letter-spacing: 1px;
+        }
+        .feedback-btn:hover { background: #006600; border-color: #fff; box-shadow: 0 0 15px var(--lcd-on); color: #fff; }
+
+        #help-content { margin-top: 50px; padding-top: 20px; border-top: 1px solid #003300; width: 100%; }
+
+        /* MODAL CUSTOM MATRIX */
+        #modal-overlay { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); 
+            display: none; justify-content: center; align-items: center; z-index: 3000; pointer-events: auto;
+        }
+        .modal-box { 
+            background: #002200; border: 2px solid var(--lcd-on); padding: 20px; border-radius: 8px; 
+            text-align: center; width: 80%; max-width: 300px; box-shadow: 0 0 20px var(--lcd-on);
+        }
+        .modal-title { font-family: 'Orbitron'; color: var(--lcd-on); margin-bottom: 15px; font-size: 14px; }
+        .modal-input-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
+        .modal-input-grp { display: flex; flex-direction: column; }
+        .modal-input-grp label { font-size: 9px; color: #00aa00; margin-bottom: 5px; }
+        .modal-input-grp input { width: 60px; padding: 5px; background: #000; border: 1px solid #005500; color: #0f0; text-align: center; }
+        .modal-btn { padding: 8px 20px; background: var(--lcd-on); border: none; font-weight: bold; cursor: pointer; border-radius: 4px; }
+        
+        #cork-icon { display: none !important; }
+
+    </style>
+</head>
+<body>
+
+    <div id="startup-overlay">
+        <div class="intro-lang-bar" id="intro-lang-bar">
+            <div class="intro-lang-btn active" onclick="setIntroLang('FR', event)">FR</div>
+            <div class="intro-lang-btn" onclick="setIntroLang('EN', event)">EN</div>
+            <div class="intro-lang-btn" onclick="setIntroLang('ES', event)">ES</div>
+            <div class="intro-lang-btn" onclick="setIntroLang('RU', event)">RU</div>
+            <div class="intro-lang-btn" onclick="setIntroLang('JP', event)">JP</div>
+            <div class="intro-lang-btn" onclick="setIntroLang('PL', event)">PL</div>
+        </div>
+
+        <div class="startup-box">
+            <div class="startup-title" id="intro-title">INTRODUCTION</div>
+            <div class="startup-text" id="intro-text">
+                Shnopia Light Engine est une interface web universelle conçue pour transformer instantanément n'importe quel écran (ordinateur, tablette, smartphone) en dalle de lumière professionnelle. Elle contrôle votre écran comme un projecteur de cinéma entièrement ajustable, sans aucune installation.
+            </div>
+            <div class="startup-hint" id="intro-hint">CLIQUEZ POUR CONTINUER</div>
+        </div>
+    </div>
+
+    <canvas id="light-canvas"></canvas>
+    <canvas id="text-canvas"></canvas>
+    <div id="cork-icon"></div>
+
+    <div id="modal-overlay" onclick="closeModalOnOutside(event)">
+        <div class="modal-box">
+            <div class="modal-title">CUSTOM MATRIX</div>
+            <div class="modal-input-row">
+                <div class="modal-input-grp">
+                    <label>COLS</label>
+                    <input type="number" id="custom-w" value="50" min="1">
+                </div>
+                <div class="modal-input-grp">
+                    <label>ROWS</label>
+                    <input type="number" id="custom-h" value="50" min="1">
+                </div>
+            </div>
+            <button class="modal-btn" onclick="applyCustomMatrix()">APPLY</button>
+        </div>
+    </div>
+
+    <div id="ui-layer" onclick="handleGlobalClick(event)">
+        <div class="control-panel" id="main-panel" onclick="event.stopPropagation()">
+            <div class="drag-bar" id="drag-handle"><div class="grip-lines"></div></div>
+            <div class="panel-header">
+                <span class="app-title">Shnopia Light Engine V7.77</span>
+                
+                <div class="header-controls">
+                    <span class="lang-icon" onclick="toggleLangMenu(event)">🌍</span>
+                    <div id="lang-menu">
+                        <div class="lang-option" onclick="setLangGlobal('FR')">FRANÇAIS</div>
+                        <div class="lang-option" onclick="setLangGlobal('EN')">ENGLISH</div>
+                        <div class="lang-option" onclick="setLangGlobal('ES')">ESPAÑOL</div>
+                        <div class="lang-option" onclick="setLangGlobal('RU')">PУССКИЙ</div>
+                        <div class="lang-option" onclick="setLangGlobal('JP')">日本語</div>
+                        <div class="lang-option" onclick="setLangGlobal('PL')">POLSKI</div>
+                    </div>
+
+                    <div class="preview-container"><span class="preview-label" data-tr="PREVIEW">PREVIEW</span><div class="header-preview-box" onclick="togglePreviewFS()"><canvas id="preview-canvas"></canvas></div></div>
+                    <button class="hide-btn" onclick="minimizePanel()" data-tr="HIDE">HIDE ME</button>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab-btn" onclick="switchTab('tab-live', this)" data-tr="LIVE">LIVE</button>
+                <button class="tab-btn active" onclick="switchTab('tab-wheel', this)" data-tr="COLOR">COLOR</button>
+                <button class="tab-btn" onclick="switchTab('tab-cct', this)" data-tr="WHITE">WHITE</button>
+                <button class="tab-btn" onclick="switchTab('tab-fx', this)" data-tr="CINEMA">CINEMA FX</button>
+                <button class="tab-btn" onclick="switchTab('tab-custom', this)" data-tr="SHNOPIA">SHNOPIA FX</button>
+                <button class="tab-btn" onclick="switchTab('tab-matrix', this)" data-tr="MATRIX">MATRIX</button>
+                <button class="tab-btn" onclick="switchTab('tab-text', this)" data-tr="TEXT">TEXT</button>
+                <button class="tab-btn" onclick="switchTab('tab-help', this)" data-tr="HELP">HOW TO USE</button>
+            </div>
+
+            <div id="tab-live" class="panel-content">
+                <div class="live-grid" id="live-grid">
+                    </div>
+            </div>
+
+            <div id="tab-wheel" class="panel-content visible">
+                <div class="wheel-wrapper"><div class="wheel-container" id="color-wheel"><div class="wheel-cursor" id="wheel-cursor"></div></div></div>
+                <div class="control-group">
+                    <div class="label-row"><span data-tr="SATURATION">SATURATION</span><input type="number" class="lcd-input" id="val-sat-input" value="100" min="0" max="100"></div>
+                    <input type="range" min="0" max="100" value="100" id="input-sat">
+                </div>
+                <input type="text" class="hex-input" id="hex-input" value="#FF0000" maxlength="7">
+                
+                <div class="rgb-section">
+                    <div class="control-group">
+                        <div class="label-row color-r"><span data-tr="RED">RED</span><input type="number" class="lcd-input color-r" id="val-r-input" value="255" min="0" max="255"></div>
+                        <input type="range" id="input-r" min="0" max="255" value="255">
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row color-g"><span data-tr="GREEN">GREEN</span><input type="number" class="lcd-input color-g" id="val-g-input" value="0" min="0" max="255"></div>
+                        <input type="range" id="input-g" min="0" max="255" value="0">
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row color-b"><span data-tr="BLUE">BLUE</span><input type="number" class="lcd-input color-b" id="val-b-input" value="0" min="0" max="255"></div>
+                        <input type="range" id="input-b" min="0" max="255" value="0">
+                    </div>
+                </div>
+
+                <button class="recall-btn momentary-btn" onclick="recallWhite()" data-tr="RECALL_WHITE">RECALL WHITE SETTINGS</button>
+                <button class="activate-btn momentary-btn" onclick="activateStatic('WHEEL')" data-tr="ACTIVATE_COLOR">ACTIVER LA COULEUR</button>
+                
+                <div class="memory-section">
+                    <div class="memory-label" data-tr="MEMORIES">MÉMOIRES (HAUT: CHARGER / BAS: SAUVER)</div>
+                    <div class="memory-row" id="color-memories"></div>
+                </div>
+            </div>
+
+            <div id="tab-cct" class="panel-content">
+                <div class="control-group">
+                    <div class="label-row"><span data-tr="KELVIN">TEMPERATURE (KELVIN)</span><span id="val-kelvin">3200K</span></div>
+                    <input type="range" min="1750" max="10000" value="3200" id="input-kelvin">
+                    <div class="presets-row">
+                        <button class="preset-btn k2700" onclick="setKelvin(2700, this)">2700K</button>
+                        <button class="preset-btn k3200 active" onclick="setKelvin(3200, this)">3200K</button>
+                        <button class="preset-btn k4300" onclick="setKelvin(4300, this)">4300K</button>
+                        <button class="preset-btn k5600" onclick="setKelvin(5600, this)">5600K</button>
+                        <button class="preset-btn k6500" onclick="setKelvin(6500, this)">6500K</button>
+                    </div>
+                </div>
+                <div class="control-group" style="margin-top:15px;">
+                    <div class="label-row"><span data-tr="TINT">TINT (G/M)</span><span id="val-tint">0</span></div>
+                    <input type="range" min="-50" max="50" value="0" id="input-tint">
+                </div>
+                <div class="label-row" style="margin-top:15px;"><span data-tr="MANUAL_WHITE">MANUEL BLANC</span></div>
+                <input type="text" class="hex-input" id="hex-input-white" value="#FFFFFF" maxlength="7">
+                
+                <div class="rgb-section">
+                    <div class="control-group">
+                        <div class="label-row color-r"><span data-tr="RED">RED</span><input type="number" class="lcd-input color-r" id="val-white-r-input" value="255" min="0" max="255"></div>
+                        <input type="range" id="input-white-r" min="0" max="255" value="255">
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row color-g"><span data-tr="GREEN">GREEN</span><input type="number" class="lcd-input color-g" id="val-white-g-input" value="255" min="0" max="255"></div>
+                        <input type="range" id="input-white-g" min="0" max="255" value="255">
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row color-b"><span data-tr="BLUE">BLUE</span><input type="number" class="lcd-input color-b" id="val-white-b-input" value="255" min="0" max="255"></div>
+                        <input type="range" id="input-white-b" min="0" max="255" value="255">
+                    </div>
+                </div>
+                
+                <button class="activate-btn momentary-btn" onclick="activateStatic('CCT')" data-tr="ACTIVATE_WHITE">ACTIVER LE BLANC</button>
+            </div>
+
+            <div id="tab-fx" class="panel-content">
+                <div class="control-group">
+                    <div class="label-row"><span data-tr="SPEED">SPEED</span><input type="number" class="lcd-input" id="val-speed-input" value="4" min="1" max="100"></div>
+                    <input type="range" min="1" max="100" value="4" id="input-speed">
+                </div>
+                <div class="label-row" style="margin-top:2px;"><span data-tr="COLOR_OVERRIDE">COLOR OVERRIDE (CLICK TO REPLACE FX COLORS)</span></div>
+                <div class="palette-container" id="palette-fx"></div>
+                <div class="fx-grid" id="cinema-grid" style="margin-top:5px;"></div>
+                
+                <div class="modifiers-container" style="margin-top:10px; border-top:1px solid #004400; padding-top:10px;">
+                    <div class="control-group">
+                        <div class="label-row"><span>PARAM A (STRUCT)</span><span id="val-fx-p1">50%</span></div>
+                        <input type="range" min="0" max="100" value="50" id="input-fx-p1" oninput="updateFxParam(1, this.value)">
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row"><span>PARAM B (COLOR/VAR)</span><span id="val-fx-p2">50%</span></div>
+                        <input type="range" min="0" max="100" value="50" id="input-fx-p2" oninput="updateFxParam(2, this.value)">
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-custom" class="panel-content">
+                <div class="control-group">
+                    <div class="label-row"><span data-tr="SPEED">SPEED</span><input type="number" class="lcd-input" id="val-speed-shnopia-input" value="50" min="1" max="100"></div>
+                    <input type="range" min="1" max="100" value="50" id="input-speed-shnopia">
+                </div>
+                <div class="label-row" style="margin-top:2px;"><span data-tr="COLOR_OVERRIDE">COLOR OVERRIDE (CLICK TO REPLACE FX COLORS)</span></div>
+                <div class="palette-container" id="palette-shnopia"></div>
+                <div class="fx-grid" id="shnopia-grid" style="margin-top:5px;"></div>
+                
+                <div class="modifiers-container" style="margin-top:10px; border-top:1px solid #004400; padding-top:10px;">
+                    <div class="control-group">
+                        <div class="label-row"><span>PARAM A (STRUCT)</span><span id="val-shnopia-p1">50%</span></div>
+                        <input type="range" min="0" max="100" value="50" id="input-shnopia-p1" oninput="updateFxParam(1, this.value)">
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row"><span>PARAM B (COLOR/VAR)</span><span id="val-shnopia-p2">50%</span></div>
+                        <input type="range" min="0" max="100" value="50" id="input-shnopia-p2" oninput="updateFxParam(2, this.value)">
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-matrix" class="panel-content">
+                <div class="matrix-section" style="height:auto; flex:1;">
+                    <div class="label-row" data-tr="PRESETS">PRESETS</div>
+                    <div class="mapping-list" style="grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(5, 1fr);">
+                        <div class="map-btn" onclick="setMapMode(-1, this)"><span>OFF</span><span>(HD)</span></div>
+                        <div class="map-btn" onclick="setMapMode(0, this)"><span>Titan</span><span>8x16</span></div>
+                        <div class="map-btn" onclick="setMapMode(1, this)"><span>Matrix</span><span>60x30</span></div>
+                        <div class="map-btn" onclick="setMapMode(2, this)"><span>Single</span><span>1x1</span></div>
+                        <div class="map-btn" onclick="setMapMode(3, this)"><span>2-Lite</span><span>2x1</span></div>
+                        <div class="map-btn" onclick="setMapMode(4, this)"><span>4-Lite</span><span>2x2</span></div>
+                        <div class="map-btn" onclick="setMapMode(5, this)"><span>Bar</span><span>60x1</span></div>
+                        <div class="map-btn" onclick="setMapMode(6, this)"><span>Retro</span><span>10x5</span></div>
+                        <div class="map-btn" onclick="setMapMode(7, this)"><span>Soft</span><span>20x10</span></div>
+                        <div class="map-btn" onclick="setMapMode(8, this)"><span>Strip</span><span>1x40</span></div>
+                        <div class="map-btn" onclick="setMapMode(9, this)"><span>UHD</span><span>100x50</span></div>
+                        <div class="map-btn" onclick="setMapMode(10, this)"><span>Wide</span><span>16x9</span></div>
+                        <div class="map-btn" onclick="setMapMode(11, this)"><span>4:3</span><span>12x9</span></div>
+                        <div class="map-btn" onclick="setMapMode(12, this)"><span>Sq.Lo</span><span>8x8</span></div>
+                        <div class="map-btn" onclick="setMapMode(13, this)"><span>Sq.Hi</span><span>32x32</span></div>
+                        
+                        <div class="map-btn" id="btn-set" onclick="showCustomMatrixModal()"><span>SET</span><span id="set-display" class="map-set-display">--x--</span></div>
+                    </div>
+                    
+                    <div class="label-row" style="margin-top:15px;" data-tr="MODIFIERS">MODIFIERS</div>
+                    <div class="modifiers-container">
+                        <div class="control-group modifier-slider" id="grp-grid">
+                            <div class="label-row"><span>MULTIPLIER</span><span id="val-grid-lvl">x1</span></div>
+                            <input type="range" min="1" max="10" value="1" id="input-grid-lvl" oninput="updateGridSlider(this)">
+                        </div>
+                        <div class="control-group modifier-slider" id="grp-warp">
+                            <div class="label-row"><span>WARP</span><span id="val-warp-lvl">0</span></div>
+                            <input type="range" min="0" max="10" value="0" id="input-warp-lvl" oninput="updateWarpSlider(this)">
+                        </div>
+                        <div class="control-group modifier-slider" id="grp-noise">
+                            <div class="label-row"><span>NOISE</span><span id="val-noise-lvl">0</span></div>
+                            <input type="range" min="0" max="10" value="0" id="input-noise-lvl" oninput="updateNoiseSlider(this)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-text" class="panel-content">
+                <div class="control-group"><div class="label-row"><span data-tr="MESSAGE">MESSAGE</span></div><div class="text-input-wrapper"><input type="text" id="text-content" placeholder="TAPEZ ICI" value="Shnopia Light Engine enhances your set"></div></div>
+                <button class="text-toggle-btn momentary-btn" id="btn-text-toggle" onclick="toggleText()" data-tr="TEXT_OFF">TEXTE: OFF</button>
+                <div style="margin-top: 10px;">
+                    <div class="control-group"><div class="label-row"><span data-tr="FONT">POLICE</span></div><select id="input-text-font" class="dropdown"><option value="'Roboto Mono', monospace">Standard Tech</option><option value="'Bebas Neue', sans-serif">Cinéma</option><option value="'Press Start 2P', cursive">Pixel</option><option value="'Lobster', cursive">Manuscrit</option><option value="'Orbitron', sans-serif">Futuriste</option><option value="'Pacifico', cursive">Vintage</option><option value="'Bangers', cursive">Comics</option><option value="'Creepster', cursive">Horreur</option><option value="'Monoton', cursive">Rétro Lines</option><option value="'Black Ops One', cursive">Militaire</option></select></div>
+                    <div class="control-group"><div class="label-row"><span data-tr="EFFECT">EFFET</span></div><select id="input-text-effect" class="dropdown"><option value="NONE">Aucun</option><option value="NEON">Neon</option><option value="GLITCH">Glitch</option><option value="WAVE">Wave</option><option value="TYPE">Typewriter</option><option value="STROKE">Outline</option><option value="MIRROR">Reflet</option><option value="SHAKE">Tremblement</option><option value="RAINBOW">Rainbow</option><option value="BOUNCE">Rebond</option><option value="BREATHE">Respiration</option></select></div>
+                    <div class="control-group modifier-slider" id="grp-text-fx"><div class="label-row"><span data-tr="INTENSITY">INTENSITÉ</span><span id="val-text-fx-lvl">50%</span></div><input type="range" min="0" max="100" value="50" id="input-text-fx-lvl" oninput="updateTextSlider()"></div>
+                    <div class="control-group"><div class="label-row"><span data-tr="SIZE">TAILLE</span><span id="val-text-size">50%</span></div><input type="range" min="5" max="100" value="50" id="input-text-size"></div>
+                    <div class="control-group"><div class="label-row"><span data-tr="SPEED">VITESSE</span><span id="val-text-speed">5</span></div><input type="range" min="0" max="30" value="5" id="input-text-speed"></div>
+                    <div class="control-group"><div class="label-row"><span data-tr="COLOR">COULEUR</span></div><input type="color" id="input-text-color" value="#ffffff" style="width:100%; height:30px; border:none; padding: 0;"></div>
+                </div>
+            </div>
+            
+            <div id="tab-help" class="panel-content">
+                <div class="rossignol-box">
+                    <span class="rossignol-brand"><span class="rossignol-icon">🐦</span> Rossignol Grip Vibe Coding</span>
+                    <a href="mailto:rossignol.p@gmail.com" class="contact-link">Contact: rossignol.p@gmail.com</a>
+                </div>
+                <div id="help-content"></div>
+            </div>
+
+            <div class="panel-footer">
+                <div><div class="label-row"><span data-tr="DIMMER">INTENSITÉ</span><input type="number" class="lcd-input" id="val-dimmer-input" value="100" min="0" max="100"></div><input type="range" min="0" max="100" value="100" id="input-dimmer"></div>
+                <div class="footer-buttons">
+                    <button class="led-btn blackout-btn" id="btn-blackout" onclick="toggleBlackout()">BLACKOUT</button>
+                    <button class="led-btn fullscreen-btn momentary-btn" onclick="toggleFS()" data-tr="FULLSCREEN">FULL SCREEN</button>
+                </div>
+                <div class="signature">
+    Développé par Shnopia par amour du cinéma
+    <div style="margin-top: 4px; font-size: 9px; color: #005500; border-top: 1px solid #002200; padding-top: 2px;">
+        SYSTEM ACCESS: <span id="global-counter" style="color: var(--lcd-on); font-weight: bold; letter-spacing: 1px; text-shadow: 0 0 5px rgba(51, 255, 51, 0.5);">CONNECTING...</span>
+    </div>
+</div>
+    </div>
+
+    <script>
+        // --- TRANSLATION DICTIONARY ---
+       const DICT = {
+            FR: {
+                INTRO_TITLE: "INTRODUCTION",
+                INTRO_TEXT: "Shnopia Light Engine est une interface web universelle conçue pour transformer instantanément n'importe quel écran (ordinateur, tablette, smartphone) en source lumineuse professionnelle. Elle contrôle votre écran comme un projecteur de cinéma entièrement ajustable, sans aucune installation.",
+                INTRO_HINT: "CLIQUEZ POUR CONTINUER",
+                PREVIEW: "APERÇU", HIDE: "CACHER", LIVE: "LIVE", COLOR: "COULEUR", WHITE: "BLANC", CINEMA: "CINEMA FX", SHNOPIA: "SHNOPIA FX", MATRIX: "MATRIX", TEXT: "TEXTE", HELP: "AIDE",
+                SATURATION: "SATURATION", RED: "ROUGE", GREEN: "VERT", BLUE: "BLEU", RECALL_WHITE: "RAPPELER RÉGLAGE BLANC", ACTIVATE_COLOR: "ACTIVER LA COULEUR", MEMORIES: "MÉMOIRES (HAUT: CHARGER / BAS: SAUVER)",
+                KELVIN: "TEMPERATURE (KELVIN)", TINT: "TEINTE (G/M)", MANUAL_WHITE: "BLANC MANUEL", ACTIVATE_WHITE: "ACTIVER LE BLANC",
+                SPEED: "VITESSE", COLOR_OVERRIDE: "REMPLACEMENT COULEURS (CLIC)", PRESETS: "PRESETS", MODIFIERS: "MODIFIEURS",
+                MESSAGE: "MESSAGE", FONT: "POLICE", EFFECT: "EFFET", INTENSITY: "INTENSITÉ", SIZE: "TAILLE", TEXT_OFF: "TEXTE: OFF", TEXT_ON: "TEXTE: ON",
+                DIMMER: "INTENSITÉ", FULLSCREEN: "PLEIN ÉCRAN",
+                HELP_CONTENT: "<div class='rossignol-box' style='padding: 20px; margin-bottom: 20px;'><a href='https://haarsk.github.io/Shnopia-Light-Engine/manual.html' target='_blank' style='font-family: \"Orbitron\"; color: #00ff00; text-decoration: underline; font-weight: 900; font-size: 18px; text-shadow: 0 0 10px #00ff00;'>Manuel disponible ici</a><span style='font-family: \"Orbitron\"; color: #ff0000; font-weight: bold; display: inline-block; margin-top: 15px; max-width: 95%; line-height: 1.5; font-size: 12px; text-align: center;'>(Attention vous allez sortir de l'application, il faudra revenir au bon onglet dans votre navigateur pour retrouver vos Set-up)</span></div>"
+            },
+            EN: {
+                INTRO_TITLE: "INTRODUCTION",
+                INTRO_TEXT: "Shnopia Light Engine is a universal web interface designed to instantly transform any screen (computer, tablet, smartphone) into a professional light source. It controls your screen like a fully adjustable cinema projector, without any installation.",
+                INTRO_HINT: "CLICK TO CONTINUE",
+                PREVIEW: "PREVIEW", HIDE: "HIDE", LIVE: "LIVE", COLOR: "COLOR", WHITE: "WHITE", CINEMA: "CINEMA FX", SHNOPIA: "SHNOPIA FX", MATRIX: "MATRIX", TEXT: "TEXT", HELP: "HELP",
+                SATURATION: "SATURATION", RED: "RED", GREEN: "GREEN", BLUE: "BLUE", RECALL_WHITE: "RECALL WHITE", ACTIVATE_COLOR: "ACTIVATE COLOR", MEMORIES: "MEMORIES",
+                KELVIN: "KELVIN", TINT: "TINT", MANUAL_WHITE: "MANUAL WHITE", ACTIVATE_WHITE: "ACTIVATE WHITE",
+                SPEED: "SPEED", COLOR_OVERRIDE: "COLOR OVERRIDE", PRESETS: "PRESETS", MODIFIERS: "MODIFIERS",
+                MESSAGE: "MESSAGE", FONT: "FONT", EFFECT: "EFFECT", INTENSITY: "INTENSITÉ", SIZE: "SIZE", TEXT_OFF: "TEXT: OFF", TEXT_ON: "TEXT: ON",
+                DIMMER: "DIMMER", FULLSCREEN: "FULL SCREEN",
+                HELP_CONTENT: "<div class='rossignol-box' style='padding: 20px; margin-bottom: 20px;'><a href='https://haarsk.github.io/Shnopia-Light-Engine/manual.html' target='_blank' style='font-family: \"Orbitron\"; color: #00ff00; text-decoration: underline; font-weight: 900; font-size: 18px; text-shadow: 0 0 10px #00ff00;'>Manual available here</a><span style='font-family: \"Orbitron\"; color: #ff0000; font-weight: bold; display: inline-block; margin-top: 15px; max-width: 95%; line-height: 1.5; font-size: 12px; text-align: center;'>(Warning: you will leave the app, you will have to return to the right tab in your browser to find your Set-ups)</span></div>"
+            },
+            ES: { 
+                INTRO_TITLE: "INTRODUCCIÓN", 
+                INTRO_TEXT: "Shnopia Light Engine es una interfaz web universal diseñada para transformar instantáneamente cualquier pantalla (ordenador, tableta, smartphone) en una fuente de luz profesional. Controla su pantalla como un proyector de cine totalmente ajustable, sin ninguna instalación.", 
+                INTRO_HINT: "HAGA CLIC PARA CONTINUAR", 
+                PREVIEW: "VISTA", HIDE: "OCULTAR", LIVE: "VIVO", COLOR: "COLOR", WHITE: "BLANCO", CINEMA: "CINE FX", SHNOPIA: "SHNOPIA FX", MATRIX: "MATRIZ", TEXT: "TEXTO", HELP: "AYUDA", SATURATION: "SATURACION", RED: "ROJO", GREEN: "VERDE", BLUE: "AZUL", RECALL_WHITE: "RECUPERAR BLANCO", ACTIVATE_COLOR: "ACTIVAR COLOR", MEMORIES: "MEMORIAS", KELVIN: "KELVIN", TINT: "TINTE", MANUAL_WHITE: "BLANCO MANUAL", ACTIVATE_WHITE: "ACTIVAR BLANCO", SPEED: "VELOCIDAD", COLOR_OVERRIDE: "COLOR", PRESETS: "PRESETS", MODIFIERS: "MODIFICADORES", MESSAGE: "MENSAJE", FONT: "FUENTE", EFFECT: "EFECTO", INTENSITY: "INTENSIDAD", SIZE: "TAMAÑO", TEXT_OFF: "TEXTO: OFF", TEXT_ON: "TEXTO: ON", DIMMER: "INTENSIDAD", FULLSCREEN: "PANTALLA COMPLETA", 
+                HELP_CONTENT: "<div class='rossignol-box' style='padding: 20px; margin-bottom: 20px;'><a href='https://haarsk.github.io/Shnopia-Light-Engine/manual.html' target='_blank' style='font-family: \"Orbitron\"; color: #00ff00; text-decoration: underline; font-weight: 900; font-size: 18px; text-shadow: 0 0 10px #00ff00;'>Manual disponible aquí</a><span style='font-family: \"Orbitron\"; color: #ff0000; font-weight: bold; display: inline-block; margin-top: 15px; max-width: 95%; line-height: 1.5; font-size: 12px; text-align: center;'>(Atención: saldrá de la aplicación, tendrá que volver a la pestaña correcta de su navegador para recuperar sus Set-ups)</span></div>" 
+            },
+            RU: { 
+                INTRO_TITLE: "ВВЕДЕНИЕ", 
+                INTRO_TEXT: "Shnopia Light Engine — это универсальный веб-интерфейс, разработанный для мгновенного превращения любого экрана (компьютера, планшета, смартфона) в профессиональный источник света. Он управляет вашим экраном как полностью регулируемым кинопроектором, без какой-либо установки.", 
+                INTRO_HINT: "НАЖМИТЕ ДЛЯ ПРОДОЛЖЕНИЯ", 
+                PREVIEW: "ПРЕВЬЮ", HIDE: "СКРЫТЬ", LIVE: "LIVE", COLOR: "ЦВЕТ", WHITE: "БЕЛЫЙ", CINEMA: "КИНО FX", SHNOPIA: "SHNOPIA FX", MATRIX: "МАТРИЦА", TEXT: "ТЕКСТ", HELP: "ПОМОЩЬ", SATURATION: "НАСЫЩЕННОСТЬ", RED: "КРАСНЫЙ", GREEN: "ЗЕЛЕНЫЙ", BLUE: "СИНИЙ", RECALL_WHITE: "БЕЛЫЙ", ACTIVATE_COLOR: "ЦВЕТ", MEMORIES: "ПАМЯТЬ", KELVIN: "K", TINT: "ОТТЕНОК", MANUAL_WHITE: "РУЧНОЙ", ACTIVATE_WHITE: "БЕЛЫЙ", SPEED: "СКОРОСТЬ", COLOR_OVERRIDE: "ЗАМЕНА", PRESETS: "ПРЕСЕТЫ", MODIFIERS: "МОДИФИКАТОРЫ", MESSAGE: "СООБЩЕНИЕ", FONT: "ШРИФТ", EFFECT: "ЭФФЕКТ", INTENSITY: "ИНТЕНСИВНОСТЬ", SIZE: "РАЗМЕР", TEXT_OFF: "ВЫКЛ", TEXT_ON: "ВКЛ", DIMMER: "ЯРКОСТЬ", FULLSCREEN: "ЭКРАН", 
+                HELP_CONTENT: "<div class='rossignol-box' style='padding: 20px; margin-bottom: 20px;'><a href='https://haarsk.github.io/Shnopia-Light-Engine/manual.html' target='_blank' style='font-family: \"Orbitron\"; color: #00ff00; text-decoration: underline; font-weight: 900; font-size: 18px; text-shadow: 0 0 10px #00ff00;'>Руководство доступно здесь</a><span style='font-family: \"Orbitron\"; color: #ff0000; font-weight: bold; display: inline-block; margin-top: 15px; max-width: 95%; line-height: 1.5; font-size: 12px; text-align: center;'>(Внимание: вы покидаете приложение, вам нужно будет вернуться на нужную вкладку браузера, чтобы вернуть свои настройки)</span></div>" 
+            },
+            JP: { 
+                INTRO_TITLE: "はじめに", 
+                INTRO_TEXT: "Shnopia Light Engineは、あらゆる画面（コンピュータ、タブレット、スマートフォン）を即座にプロフェッショナルな光源に変えるために設計されたユニバーサルWebインターフェースです。インストール不要で、完全に調整可能なシネマプロジェクターのように画面を制御します。", 
+                INTRO_HINT: "クリックして続行", 
+                PREVIEW: "プレビュー", HIDE: "隠す", LIVE: "ライブ", COLOR: "カラー", WHITE: "ホワイト", CINEMA: "シネマ", SHNOPIA: "SHNOPIA", MATRIX: "マトリックス", TEXT: "テキスト", HELP: "ヘルプ", SATURATION: "彩度", RED: "赤", GREEN: "緑", BLUE: "青", RECALL_WHITE: "ホワイト", ACTIVATE_COLOR: "カラー", MEMORIES: "メモリ", KELVIN: "K", TINT: "色合い", MANUAL_WHITE: "手動", ACTIVATE_WHITE: "ホワイト", SPEED: "速度", COLOR_OVERRIDE: "置換", PRESETS: "プリセット", MODIFIERS: "修飾子", MESSAGE: "メッセージ", FONT: "フォント", EFFECT: "効果", INTENSITY: "強度", SIZE: "サイズ", TEXT_OFF: "OFF", TEXT_ON: "ON", DIMMER: "調光", FULLSCREEN: "全画面", 
+                HELP_CONTENT: "<div class='rossignol-box' style='padding: 20px; margin-bottom: 20px;'><a href='https://haarsk.github.io/Shnopia-Light-Engine/manual.html' target='_blank' style='font-family: \"Orbitron\"; color: #00ff00; text-decoration: underline; font-weight: 900; font-size: 18px; text-shadow: 0 0 10px #00ff00;'>マニュアルはこちら</a><span style='font-family: \"Orbitron\"; color: #ff0000; font-weight: bold; display: inline-block; margin-top: 15px; max-width: 95%; line-height: 1.5; font-size: 12px; text-align: center;'>(注意：アプリから移動します。設定に戻るにはブラウザの正しいタブに戻ってください)</span></div>" 
+            },
+            PL: { 
+                INTRO_TITLE: "WPROWADZENIE", 
+                INTRO_TEXT: "Shnopia Light Engine to uniwersalny interfejs internetowy zaprojektowany, aby natychmiast zmienić dowolny ekran (komputer, tablet, smartfon) w profesjonalne źródło światła. Steruje ekranem jak w pełni regulowanym projektorem kinowym, bez żadnej instalacji.", 
+                INTRO_HINT: "KLIKNIJ, ABY KONTYNUOWAĆ", 
+                PREVIEW: "PODGLĄD", HIDE: "UKRYJ", LIVE: "LIVE", COLOR: "KOLOR", WHITE: "BIAŁY", CINEMA: "KINO", SHNOPIA: "SHNOPIA", MATRIX: "MATRYCA", TEXT: "TEKST", HELP: "POMOC", SATURATION: "NASYCENIE", RED: "CZERWONY", GREEN: "ZIELONY", BLUE: "NIEBIESKI", RECALL_WHITE: "BIAŁY", ACTIVATE_COLOR: "KOLOR", MEMORIES: "PAMIĘĆ", KELVIN: "K", TINT: "ODCIEŃ", MANUAL_WHITE: "RĘCZNY", ACTIVATE_WHITE: "BIAŁY", SPEED: "PRĘDKOŚĆ", COLOR_OVERRIDE: "ZAMIANA", PRESETS: "PRESETY", MODIFIERS: "MODYFIKATORY", MESSAGE: "WIADOMOŚĆ", FONT: "CZCIONKA", EFFECT: "EFEKT", INTENSITY: "MOC", SIZE: "ROZMIAR", TEXT_OFF: "WYŁ", TEXT_ON: "TEKST: WŁ", DIMMER: "MOC", FULLSCREEN: "PEŁNY EKRAN", 
+                HELP_CONTENT: "<div class='rossignol-box' style='padding: 20px; margin-bottom: 20px;'><a href='https://haarsk.github.io/Shnopia-Light-Engine/manual.html' target='_blank' style='font-family: \"Orbitron\"; color: #00ff00; text-decoration: underline; font-weight: 900; font-size: 18px; text-shadow: 0 0 10px #00ff00;'>Instrukcja dostępna tutaj</a><span style='font-family: \"Orbitron\"; color: #ff0000; font-weight: bold; display: inline-block; margin-top: 15px; max-width: 95%; line-height: 1.5; font-size: 12px; text-align: center;'>(Uwaga, opuścisz aplikację, będziesz musiał wrócić do odpowiedniej karty w przeglądarce, aby odzyskać swoje ustawienia)</span></div>" 
+            }
+        };
+    
+        // --- STARTUP LOGIC ---
+        let currentIntroLang = 'FR';
+        const overlay = document.getElementById('startup-overlay');
+        const langBtns = document.querySelectorAll('.intro-lang-btn');
+
+        function setIntroLang(lang, event) {
+            if(event) event.stopPropagation(); 
+            currentIntroLang = lang;
+            langBtns.forEach(b => b.classList.remove('active'));
+            if(event) event.target.classList.add('active');
+            const d = DICT[lang];
+            if(d.INTRO_TITLE) document.getElementById('intro-title').innerText = d.INTRO_TITLE;
+            if(d.INTRO_TEXT) document.getElementById('intro-text').innerText = d.INTRO_TEXT;
+            if(d.INTRO_HINT) document.getElementById('intro-hint').innerText = d.INTRO_HINT;
+        }
+
+        overlay.addEventListener('click', () => {
+            setLangGlobal(currentIntroLang);
+            switchTab('tab-wheel', document.querySelector('.tab-btn:nth-child(2)')); 
+            overlay.style.opacity = '0';
+            setTimeout(() => { overlay.style.display = 'none'; }, 500);
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => { console.log("FS Blocked"); });
+            }
+            const fsBtn = document.querySelector('.fullscreen-btn');
+            fsBtn.classList.add('blink-trigger');
+            setTimeout(() => { fsBtn.classList.remove('blink-trigger'); }, 1200);
+        });
+
+        // --- UTILS ---
+        function hexToRgb(hex) { var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : {r:0,g:0,b:0}; }
+        function rgbToHex(r,g,b) { return "#" + ((1<<24)+(Math.round(r)<<16)+(Math.round(g)<<8)+Math.round(b)).toString(16).slice(1).toUpperCase(); }
+        function hslToRgb(h,s,l){ l/=100; s/=100; let k=n=>(n+h/30)%12, a=s*Math.min(l,1-l), f=n=>l-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1))); return [f(0)*255,f(8)*255,f(4)*255]; }
+        function rgbToHsv(r, g, b) { r/=255, g/=255, b/=255; var max=Math.max(r, g, b), min=Math.min(r, g, b); var h, s, v=max; var d=max-min; s=max==0?0:d/max; if(max==min){h=0;}else{switch(max){case r:h=(g-b)/d+(g<b?6:0);break;case g:h=(b-r)/d+2;break;case b:h=(r-g)/d+4;break;}h/=6;} return { h: h * 360, s: s * 100, v: v * 100 }; }
+        function hsvToRgb(h, s, v) { var r, g, b; var i; var f, p, q, t; h=Math.max(0,Math.min(360,h)); s=Math.max(0,Math.min(100,s)); v=Math.max(0,Math.min(100,v)); s/=100; v/=100; if(s==0){r=g=b=v;return [Math.round(r*255),Math.round(g*255),Math.round(b*255)];} h/=60; i=Math.floor(h); f=h-i; p=v*(1-s); q=v*(1-s*f); t=v*(1-s*(1-f)); switch(i){case 0:r=v;g=t;b=p;break;case 1:r=q;g=v;b=p;break;case 2:r=p;g=v;b=t;break;case 3:r=p;g=q;b=v;break;case 4:r=t;g=p;b=v;break;default:r=v;g=p;b=q;} return [Math.round(r*255), Math.round(g*255), Math.round(b*255)]; }
+        function kelvinToRgb(k){ let t=k/100,r,g,b; if(t<=66){r=255;g=99.47*Math.log(t)-161.1;if(t<=19)b=0;else b=138.5*Math.log(t-10)-305;}else{r=329.7*Math.pow(t-60,-0.133);g=288.1*Math.pow(t-60,-0.075);b=255;} return{r:c(r),g:c(g),b:c(b)}; }
+        function applyTint(rgb,t){ return {r:c(rgb.r-t*0.5), g:c(rgb.g+t*1.5), b:c(rgb.b-t*0.5)}; }
+        function c(v){ return Math.max(0,Math.min(255,v)); }
+
+        const canvas = document.getElementById('light-canvas'); const ctx = canvas.getContext('2d');
+        const textCanvas = document.getElementById('text-canvas'); const textCtx = textCanvas.getContext('2d');
+        const previewCanvas = document.getElementById('preview-canvas'); const previewCtx = previewCanvas.getContext('2d');
+        
+        let CURRENT_LANG = 'FR';
+
+        // --- STATE ---
+        let state = {
+            mode: 'WHEEL', kelvin: 3200, tint: 0, hue: 0, sat: 100, val: 100,
+            dimmer: 100, blackout: false, fxMode: 0, speedCinema: 4, speedShnopia: 50, fxParam1: 50, fxParam2: 50, mapMode: -1,
+            time: 0, 
+            textOn: false, textString: "Shnopia Light Engine enhances your set", textSize: 50, textSpeed: 5, textColor: "#ffffff", textPos: 0, textFont: "'Roboto Mono', monospace", textEffect: "NONE", textFxLvl: 50,
+            gridActive: true, gridLevel: 1, warpActive: false, warpLevel: 0, noiseActive: false, noiseLevel: 0,
+            whiteRgb: {r:255, g:255, b:255}, savedColors: ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#00FFFF'], paletteActive: [false, false, false, false, false],
+        };
+
+        const MAPS = [
+            {w:8, h:16}, {w:60, h:30}, {w:1, h:1}, {w:2, h:1}, {w:2, h:2}, {w:60, h:1}, 
+            {w:10, h:5}, {w:20, h:10}, {w:1, h:40}, {w:100, h:50}, {w:16, h:9}, {w:12, h:9}, 
+            {w:8, h:8}, {w:32, h:32}, {w:50, h:50}
+        ];
+        const CINEMA_FX = [ "STATIC", "POLICE", "FIRE", "PAPARAZZI", "TV", "WELDING", "PROCESS", "BAD BULB", "STORM", "CANDLE", "STROBE", "EXPLOSION", "CLUB", "PAPA COLOR", "FLUORESCENT", "EMERGENCY", "FIREWORKS", "GUNSHOT", "RED ALERT", "ELEVATOR", "HORROR" ];
+        const SHNOPIA_FX = [ "AURORA", "MATRIX", "CYBER", "PLASMA", "OCEAN", "LAVA", "DISCO", "SUNSET", "NEBULA", "BIFROST", "SCANNER", "RIPPLE", "SNOW", "GLITCH", "BINARY", "HEARTBEAT", "BIOHAZARD", "WARP", "RAIN", "VORTEX", "KALEIDO" ];
+
+        // --- INIT UI ---
+        function genGrid(targetId, names, offset) {
+            const container = document.getElementById(targetId);
+            names.forEach((name, i) => {
+                const id = offset + i;
+                const div = document.createElement('div'); div.className = 'fx-card'; if(id === 0) div.classList.add('active'); if(id===0) div.id='fx-static';
+                div.innerHTML = `<span>${name}</span>`; div.onclick = () => setEffect(id, div);
+                container.appendChild(div);
+            });
+        }
+        genGrid('cinema-grid', CINEMA_FX, 0); genGrid('shnopia-grid', SHNOPIA_FX, 21);
+
+        function updateMemoriesUI() {
+            const container = document.getElementById('color-memories'); container.innerHTML = '';
+            state.savedColors.forEach((col, i) => {
+                const slot = document.createElement('div'); slot.className = 'memory-slot';
+                const display = document.createElement('div'); display.className = 'memory-display-box'; display.style.backgroundColor = col; display.onclick = () => loadMemory(i); 
+                const btn = document.createElement('button'); btn.className = 'memory-save-btn momentary-btn'; btn.innerText = "SAVE"; btn.onclick = () => saveMemory(i); 
+                slot.appendChild(display); slot.appendChild(btn); container.appendChild(slot);
+            });
+            updatePaletteUI();
+        }
+
+        function genPalette(targetId) {
+            const container = document.getElementById(targetId); container.innerHTML = '';
+            state.savedColors.forEach((col, i) => {
+                const item = document.createElement('div'); item.className = 'palette-item';
+                item.onclick = () => { state.paletteActive[i] = !state.paletteActive[i]; updatePaletteUI(); };
+                const toggle = document.createElement('div'); toggle.className = 'palette-toggle'; 
+                const display = document.createElement('div'); display.className = 'palette-display'; display.style.backgroundColor = col;
+                item.appendChild(toggle); item.appendChild(display); container.appendChild(item);
+            });
+        }
+        genPalette('palette-fx'); genPalette('palette-shnopia');
+
+        function updatePaletteUI() {
+            ['palette-fx', 'palette-shnopia'].forEach(id => {
+                const toggles = document.getElementById(id).getElementsByClassName('palette-toggle');
+                const displays = document.getElementById(id).getElementsByClassName('palette-display');
+                state.savedColors.forEach((col, i) => { 
+                    if(toggles[i]) { 
+                        if(state.paletteActive[i]) toggles[i].classList.add('active'); else toggles[i].classList.remove('active'); 
+                        displays[i].style.backgroundColor = col; 
+                    } 
+                });
+            });
+        }
+
+        function toggleLangMenu(e) {
+            e.stopPropagation();
+            document.getElementById('lang-menu').classList.toggle('show');
+        }
+        
+        function setLangGlobal(lang) {
+            CURRENT_LANG = lang;
+            document.getElementById('lang-menu').classList.remove('show');
+            const d = DICT[lang];
+            if(d) {
+                document.querySelectorAll('[data-tr]').forEach(el => {
+                    const key = el.getAttribute('data-tr');
+                    if(d[key]) el.innerText = d[key];
+                });
+            }
+            const txtBtn = document.getElementById('btn-text-toggle');
+            if(state.textOn) txtBtn.innerText = d.TEXT_ON; else txtBtn.innerText = d.TEXT_OFF;
+            document.getElementById('help-content').innerHTML = d.HELP_CONTENT;
+        }
+        
+        // --- LIVE PAD SYSTEM ---
+        const LIVE_SLOTS = 16;
+        let liveMemory = new Array(LIVE_SLOTS).fill(null);
+        let isRecording = false;
+        
+        function initLiveGrid() {
+            const grid = document.getElementById('live-grid');
+            for(let i=0; i<LIVE_SLOTS; i++) {
+                const slot = document.createElement('div'); slot.className = 'live-slot';
+                const pad = document.createElement('div'); pad.className = 'live-pad'; pad.id = `live-pad-${i}`; pad.onclick = () => recallLive(i);
+                const empty = document.createElement('span'); empty.className = 'empty-pad-text'; empty.innerText = "EMPTY";
+                pad.appendChild(empty);
+                const saveBtn = document.createElement('button'); saveBtn.className = 'live-save-btn momentary-btn'; saveBtn.id = `save-btn-${i}`; saveBtn.innerText = "SAVE"; saveBtn.onclick = (e) => { e.stopPropagation(); saveLive(i); };
+                slot.appendChild(pad); slot.appendChild(saveBtn); grid.appendChild(slot);
+            }
+        }
+        initLiveGrid();
+
+        function saveLive(index) {
+            if(isRecording) return;
+            isRecording = true;
+            const btn = document.getElementById(`save-btn-${index}`);
+            btn.classList.add('saving-red');
+            setTimeout(() => { btn.classList.remove('saving-red'); }, 1000);
+            liveMemory[index] = JSON.parse(JSON.stringify(state));
+            const stream = canvas.captureStream(30); 
+            const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' }); 
+            const chunks = [];
+            recorder.ondataavailable = (e) => { if(e.data.size > 0) chunks.push(e.data); };
+            recorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'video/webm' }); const url = URL.createObjectURL(blob);
+                const pad = document.getElementById(`live-pad-${index}`); pad.innerHTML = '';
+                const video = document.createElement('video'); video.className = 'pad-video'; video.src = url; video.muted = true; video.loop = true; video.autoplay = true; video.playsInline = true;
+                pad.appendChild(video); video.play();
+                isRecording = false;
+            };
+            recorder.start(); 
+            setTimeout(() => { recorder.stop(); }, 2000); 
+        }
+
+        function recallLive(index) {
+            if(!liveMemory[index]) return;
+            state = JSON.parse(JSON.stringify(liveMemory[index]));
+            syncUI();
+            document.querySelectorAll('.live-pad').forEach(p => p.classList.remove('active-preset'));
+            document.getElementById(`live-pad-${index}`).classList.add('active-preset');
+        }
+
+        function saveMemory(index) {
+            const rgb = hsvToRgb(state.hue, state.sat, state.val); 
+            const hex = rgbToHex(rgb[0], rgb[1], rgb[2]);
+            state.savedColors[index] = hex; 
+            updateMemoriesUI();
+        }
+        function loadMemory(index) {
+            let hex = state.savedColors[index];
+            if(!hex.startsWith('#')) hex = '#' + hex;
+            const rgb = hexToRgb(hex);
+            document.getElementById('input-r').value = rgb.r; document.getElementById('input-g').value = rgb.g; document.getElementById('input-b').value = rgb.b;
+            updateFromRGB(); activateStatic('WHEEL');
+        }
+        updateMemoriesUI();
+
+        // --- RENDER LOOP V7.6 (PARAM B = VARIATION/COULEUR, PAS INTENSITÉ) ---
+        let stormFlash = 0;
+        const RENDER_SCALE = 0.15; 
+        
+        let cachedWidth = 0, cachedHeight = 0;
+        let imgData = null;
+        let buf32 = null; 
+
+        function render() {
+            // Blackout check
+            if(state.blackout) { 
+                ctx.fillStyle = "black"; 
+                if(canvas.width > 1) { ctx.fillRect(0, 0, canvas.width, canvas.height); }
+                textCtx.clearRect(0, 0, textCanvas.width, textCanvas.height); 
+                requestAnimationFrame(render); 
+                return; 
+            }
+
+            // Resolution Setup
+            let baseMap = MAPS[state.mapMode] || MAPS[0]; 
+            let multiplier = state.gridActive ? state.gridLevel : 1;
+            let isMatrixMode = state.mapMode !== 0 && state.mode === 'MATRIX';
+            let rawW = window.innerWidth;
+            let rawH = window.innerHeight;
+            let targetW, targetH;
+
+            // Matrix Logic Fix: If mapMode is -1, it's HD (OFF). If >= 0, it's Pixelated.
+            if (state.mapMode >= 0) {
+                 targetW = baseMap.w * multiplier;
+                 targetH = baseMap.h * multiplier;
+            } else {
+                 targetW = Math.floor(rawW * RENDER_SCALE);
+                 targetH = Math.floor(rawH * RENDER_SCALE);
+                 if(targetW < 1) targetW = 1; 
+                 if(targetH < 1) targetH = 1;
+            }
+
+            if(cachedWidth !== targetW || cachedHeight !== targetH) {
+                canvas.width = targetW;
+                canvas.height = targetH;
+                cachedWidth = targetW;
+                cachedHeight = targetH;
+                canvas.style.imageRendering = (state.mapMode >= 0) ? 'pixelated' : 'auto';
+                imgData = ctx.createImageData(targetW, targetH);
+                buf32 = new Uint32Array(imgData.data.buffer);
+            }
+
+            if(textCanvas.width !== rawW || textCanvas.height !== rawH) { 
+                textCanvas.width = rawW; 
+                textCanvas.height = rawH; 
+            }
+
+            // --- PARAMETRES ---
+            let currentSpeed = state.fxMode <= 20 ? state.speedCinema : state.speedShnopia;
+            state.time += (currentSpeed / 50) * 0.05; 
+            const t = state.time; 
+            const w = targetW; 
+            const h = targetH;
+
+            // PA (0.1 à 2.0) : STRUCTURE (Zoom, Taille)
+            let pa = Math.max(0.1, state.fxParam1 / 50); 
+            // PB (0.0 à 1.0) : VARIATION / COULEUR (Normalized)
+            let pb = state.fxParam2 / 100; 
+
+            // Eclair logic
+            if(state.fxMode === 8) { 
+                if(Math.random() > (0.99 - (pa * 0.01))) stormFlash = 1; 
+                else stormFlash *= 0.85; 
+                if(stormFlash < 0.01) stormFlash = 0.02; 
+            }
+
+            const activeColors = state.savedColors.filter((c, i) => state.paletteActive[i]).map(hex => hexToRgb(hex)); 
+            const usePalette = activeColors.length > 0 && state.fxMode !== 0;
+            
+            let rB, gB, bB;
+            if (state.mode === 'WHEEL') { const rgb = hsvToRgb(state.hue, state.sat, state.val); rB=rgb[0]; gB=rgb[1]; bB=rgb[2]; } 
+            else if (state.mode === 'CCT') { rB=state.whiteRgb.r; gB=state.whiteRgb.g; bB=state.whiteRgb.b; } 
+            else { rB=0; gB=0; bB=0; }
+
+            const setP = (i, r, g, b) => {
+                r = r < 0 ? 0 : (r > 255 ? 255 : r);
+                g = g < 0 ? 0 : (g > 255 ? 255 : g);
+                b = b < 0 ? 0 : (b > 255 ? 255 : b);
+                buf32[i] = (255 << 24) | (b << 16) | (g << 8) | r;
+            };
+
+            const p = (idx32, r,g,b, i=1, x, y) => { 
+                if(state.warpActive && state.warpLevel > 0) { let offset = Math.sin(y * 0.1 * state.warpLevel + t) * (state.warpLevel * 2); i *= (0.5 + 0.5 * Math.sin(offset)); }
+                if(state.noiseActive && state.noiseLevel > 0) { if(Math.random() < state.noiseLevel * 0.05) { r=255; g=255; b=255; } else { let grain = (Math.random()-0.5) * state.noiseLevel * 20; r+=grain; g+=grain; b+=grain; } }
+                
+                if(usePalette) { 
+                    let luma = 0.299*r + 0.587*g + 0.114*b;
+                    if (luma > 10) {
+                        let cycle = Math.floor(t * 2 + (x/w)*2*pa + (y/h)*2*pa);
+                        let colIndex = cycle % activeColors.length;
+                        if (colIndex < 0) colIndex = 0;
+                        let targetCol = activeColors[colIndex];
+                        let intensity = (luma/255) * i;
+                        // PB shift hue légèrement sur palette
+                        let rM = targetCol.r * (1-pb) + r * pb;
+                        let gM = targetCol.g * (1-pb) + g * pb;
+                        let bM = targetCol.b * (1-pb) + b * pb;
+                        setP(idx32, rM * intensity, gM * intensity, bM * intensity);
+                    } else { setP(idx32, 0,0,0); }
+                } 
+                else { setP(idx32, r*i, g*i, b*i); }
+            }
+            
+            const hsl = (idx32, hVal, sVal, lVal, x, y) => { const rgb=hslToRgb(hVal,sVal,lVal); p(idx32, rgb[0],rgb[1],rgb[2], 1, x, y); }
+
+            let idx32 = 0;
+            for(let y=0; y<h; y++) {
+                const v = (y + 0.5) / h; 
+                for(let x=0; x<w; x++) {
+                    const u = (x + 0.5) / w; 
+                    const rnd = Math.random();
+                    
+                    switch(state.fxMode) {
+                        case 0: p(idx32, rB,gB,bB, 1, x, y); break;
+                        
+                        // CINEMA FX
+                        // Police: PB = Ajout Blanc (Desaturation)
+                        case 1: p(idx32,(Math.floor(t*6)%2 ? (u<0.5*pa?0:255) : (u<0.5*pa?255:0)) + (255*pb), 255*pb, (Math.floor(t*6)%2 ? (u<0.5*pa?255:0) : (u<0.5*pa?0:255)) + (255*pb), (Math.floor(t*20)%2?1:0), x, y); break;
+                        
+                        // Fire: PB = Teinte vers Jaune/Blanc
+                        case 2: { const n=(Math.sin(t*10 + u*10*pa) + Math.sin(t*20 + v*10*pa))/2 + 0.5; p(idx32,255, (50+n*100) + (100*pb), 50*pb, 0.5+n*0.5, x, y); break; }
+                        
+                        // Paparazzi: PB = Température (Froid -> Chaud)
+                        case 3: p(idx32,255, 255-(50*pb), 255-(150*pb), rnd>(0.99 - (pa*0.04))?1:0, x, y); break;
+                        
+                        // TV: PB = Bruit de couleur
+                        case 4: { let i=0.5+rnd*0.5; if((y+Math.floor(t*20))%(Math.floor(5*pa)+1)===0)i*=0.8; p(idx32,200,220-(100*pb),255,i, x, y); break; }
+                        
+                        // Welding: PB = Bleu électrique vs Blanc chaud
+                        case 5: p(idx32,200,230,255-(200*pb), (Math.sin(t*10)>0.5 && rnd>0.5/pa)?1:0.05, x, y); break;
+                        
+                        // Process: PB = Couleur de fond
+                        case 6: p(idx32,255,180,100 + (155*pb), Math.max(0, 1 - Math.abs(u - ((t*0.5)%1)) * (10/pa)), x, y); break;
+                        
+                        // Bad Bulb: PB = Teinte Verdatre (Matrix) vs Chaud
+                        case 7: p(idx32,220,255,220-(200*pb), (rnd>(0.5*pa) || Math.sin(t)>0.8)?0.2:1, x, y); break;
+                        
+                        // Storm: PB = Couleur Eclair (Blanc -> Violet)
+                        case 8: p(idx32,255-(50*pb),255-(200*pb),255, stormFlash, x, y); break;
+                        
+                        // Candle: PB = Rougeur
+                        case 9: { let f=Math.sin(t*10)+Math.sin(t*(20*pa)); p(idx32,255,150-(50*pb),50, 0.6+f*0.1, x, y); break; }
+                        
+                        // Strobe: PB = Couleur Aléatoire
+                        case 10: { let isCol = (pb > 0.1 && rnd < pb); p(idx32, isCol?rnd*255:255, isCol?rnd*255:255, isCol?rnd*255:255, (t%1 < 0.5*pa)?1:0, x, y); break; }
+                        
+                        // Explosion: PB = Fumée (Gris)
+                        case 11: { let tr=t%3; let val=(tr<0.2*pa?1:1-(tr-(0.2*pa))); p(idx32,255, (tr<0.2)?255:(100+155*pb), (tr<0.2)?255:(100*pb), val, x, y); break; }
+                        
+                        // Club: PB = Saturation
+                        case 12: hsl(idx32, (t*50 + x*pa)%360, 100-(50*pb), 50, x, y); break;
+                        
+                        // Papa Color: PB = Fond coloré
+                        case 13: { let fl = rnd>(0.99-(pa*0.04)); hsl(idx32, rnd*360, 100, fl?50:(pb*20), x, y); break; }
+                        
+                        // Fluorescent: PB = Teinte tube (Vert -> Bleu)
+                        case 14: p(idx32,200-(100*pb),255,220+(35*pb), (t*pa%2<0.1 || rnd>0.95)?0:1, x, y); break;
+                        
+                        // Emergency: PB = Ajout Rouge/Bleu fixe
+                        case 15: { let rot = (Math.atan2(v-0.5, u-0.5) * pa + t*5) % (Math.PI*2); p(idx32,255, rot>0?0:0, rot>0?0:255*pb, 1, x, y); break; }
+                        
+                        // Fireworks: PB = Traînée (White fade)
+                        case 16: if(rnd>(0.995/pa)) hsl(idx32,rnd*360,100,50, x, y); else p(idx32,255,255,255,0.9*pb, x, y); break;
+                        // Gunshot: PB = Muzzle Flash Color (Yellow -> White)
+                        case 17: { let bang = t%1; p(idx32,255,200+(55*pb),150+(105*pb), bang<(0.05*pa)?1:0, x, y); break; }
+                        // Red Alert: PB = Add White pulse
+                        case 18: { let s=(Math.pow(Math.sin(t*5), pa)); p(idx32,255,255*pb*s,255*pb*s, s, x, y); break; }
+                        // Elevator: PB = Floor indicator color
+                        case 19: p(idx32,255,200-(200*pb),150-(150*pb), (v + t*0.5)%1 < (0.2*pa) ? 1 : 0, x, y); break;
+                        // Horror: PB = Darkness (inverse)
+                        case 20: { let flicker=rnd>0.9?0:1; p(idx32,50+(50*pb),100,50, flicker*(0.5+0.5*pb), x, y); break; }
+                        
+                        // SHNOPIA FX - PB = SHIFT COULEUR (Cycle offset)
+                        // Aurora
+                        case 21: hsl(idx32, 140+(100*pb)+Math.max(0,50-Math.abs(v-(0.5+Math.sin(u*5*pa+t)*0.1))*100), 100, 50, x, y); break;
+                        // Matrix
+                        case 22: { let r=(v + t*pa)%1; hsl(idx32, 120+(180*pb), 100, (Math.abs(v-r)<(0.1*pa) && rnd>0.8)?50:0, x, y); break; }
+                        // Cyber
+                        case 23: hsl(idx32, ((u*pa+v*pa)%0.2 < 0.1)?300:180+(180*pb), 100, (30+Math.sin(t*5)*20), x, y); break;
+                        // Plasma
+                        case 24: hsl(idx32, (Math.sin(u*5*pa+t)+Math.sin(v*5*pa+t))*40 + (360*pb)%360, 100, 50, x, y); break;
+                        // Ocean
+                        case 25: hsl(idx32, 200+(100*pb)+Math.sin(u*10*pa+t)*10, 80, 40, x, y); break;
+                        // Lava
+                        case 26: { let n=Math.sin(u*4*pa+t)+Math.cos(v*4*pa+t); hsl(idx32, 10+(60*pb)+n*10, 100, (40+n*20), x, y); break; }
+                        // Disco
+                        case 27: hsl(idx32, (t*40+u*100*pa + 180*pb)%360, 100, 50, x, y); break;
+                        // Sunset
+                        case 28: hsl(idx32, 280-v*60*pa + (100*pb), 80, 50, x, y); break;
+                        // Nebula
+                        case 29: { let noise = Math.sin(u*5*pa)*Math.cos(v*5*pa+t); hsl(idx32, 260+(100*pb)+noise*30, 80, (20+noise*20), x, y); break; }
+                        // Bifrost
+                        case 30: hsl(idx32, u*360*pa + (180*pb) + t*50, 100, 50, x, y); break;
+                        // Scanner
+                        case 31: p(idx32,255,255*pb,255*pb, Math.abs(u - (Math.sin(t*pa)*0.4 + 0.5)) < (0.05*pa) ? 1 : 0, x, y); break;
+                        // Ripple
+                        case 32: { let dist=Math.sqrt((u-0.5)**2+(v-0.5)**2); hsl(idx32, 200+(160*pb), 100, (Math.sin(dist*10*pa - t*5)*50+50), x, y); break; }
+                        // Snow: PB=Blue Tint
+                        case 33: p(idx32,255-(100*pb),255,255, rnd>(0.95/pa)?1:0, x, y); break;
+                        // Glitch
+                        case 34: if(rnd>(0.9/pa)) hsl(idx32, rnd*360, 100, 50, x, y); else p(idx32,0,255*pb,0, 1, x, y); break;
+                        // Binary
+                        case 35: p(idx32,0,255,100*pb, (Math.floor(u*10*pa+v*10*pa+t)%2)?1:0, x, y); break;
+                        // Heartbeat
+                        case 36: p(idx32,255,255*pb,255*pb, Math.pow(Math.sin(t*5), 10/pa), x, y); break;
+                        // Biohazard
+                        case 37: hsl(idx32, 100+(200*pb), 100, (20+Math.sin(u*10*pa+t)*20), x, y); break;
+                        // Warp
+                        case 38: p(idx32,255-(200*pb),255,255, (Math.abs(u-0.5)<v*pa)?1:0, x, y); break;
+                        // Rain
+                        case 39: hsl(idx32, 220+(40*pb), 100, rnd>(0.9/pa) ? 80 : 0, x, y); break;
+                        // Vortex
+                        case 40: { let ang=Math.atan2(v-0.5, u-0.5)+t; hsl(idx32, ang*50*pa+(180*pb), 100, 50, x, y); break; }
+                        // Kaleido
+                        case 41: { let mx=Math.abs(u-0.5), my=Math.abs(v-0.5); hsl(idx32, (mx*my*100*pa+t*100 + 180*pb)%360, 100, 50, x, y); break; }
+                    }
+                    
+                    idx32++;
+                }
+            }
+            
+            ctx.putImageData(imgData, 0, 0);
+            
+            // Dimmer Final
+            if(state.dimmer < 100) { 
+                ctx.fillStyle=`rgba(0,0,0, ${1-state.dimmer/100})`; 
+                ctx.fillRect(0,0,w,h); 
+            }
+
+            // TEXTE
+            textCtx.clearRect(0, 0, textCanvas.width, textCanvas.height);
+            if(state.textOn && state.textString) {
+                const fontSize = Math.max(20, textCanvas.height * (state.textSize/100));
+                textCtx.font = `bold ${fontSize}px ${state.textFont}`; 
+                textCtx.fillStyle = state.textColor; textCtx.textBaseline = "middle"; textCtx.globalAlpha = state.dimmer / 100;
+                const textWidth = textCtx.measureText(state.textString).width;
+                if(state.textSpeed > 0) { const speed = (state.textSpeed / 10) * (textCanvas.width / 100) + 0.1; state.textPos -= speed; if(state.textPos < -textWidth) state.textPos = textCanvas.width; } 
+                else { state.textPos = (textCanvas.width - textWidth) / 2; }
+                const x = state.textPos; const y = textCanvas.height/2; const lvl = state.textFxLvl / 100;
+                
+                if(state.textEffect === "NONE") { textCtx.fillText(state.textString, x, y); }
+                else if(state.textEffect === "NEON") { textCtx.shadowBlur = 20 * lvl + 5; textCtx.shadowColor = state.textColor; textCtx.fillStyle = "#ffffff"; textCtx.fillText(state.textString, x, y); textCtx.shadowBlur = 0; }
+                else if(state.textEffect === "GLITCH") { if(Math.random() < lvl) { textCtx.fillStyle = "red"; textCtx.fillText(state.textString, x + (Math.random()-0.5)*10*lvl, y); textCtx.fillStyle = "blue"; textCtx.fillText(state.textString, x, y + (Math.random()-0.5)*10*lvl); } textCtx.fillStyle = state.textColor; textCtx.fillText(state.textString, x, y); }
+                else if(state.textEffect === "WAVE") { textCtx.fillStyle = state.textColor; for (let i = 0; i < state.textString.length; i++) { const char = state.textString[i]; const yOff = Math.sin(t*5 + i*0.5) * (50 * lvl); textCtx.fillText(char, x + (i*fontSize*0.6), y + yOff); } }
+                else if(state.textEffect === "TYPE") { const len = Math.floor(state.textString.length * ((Math.sin(t)+1)/2)); textCtx.fillText(state.textString.substring(0, len), x, y); }
+                else if(state.textEffect === "STROKE") { textCtx.lineWidth = 2 + 5*lvl; textCtx.strokeStyle = state.textColor; textCtx.strokeText(state.textString, x, y); }
+                else if(state.textEffect === "MIRROR") { textCtx.fillText(state.textString, x, y); textCtx.save(); textCtx.scale(1, -1); textCtx.globalAlpha = 0.3; textCtx.fillText(state.textString, x, -y + (fontSize*0.8)); textCtx.restore(); }
+                else if(state.textEffect === "SHAKE") { const ox = (Math.random()-0.5)*20*lvl; const oy = (Math.random()-0.5)*20*lvl; textCtx.fillText(state.textString, x+ox, y+oy); }
+                else if(state.textEffect === "RAINBOW") { textCtx.fillStyle = `hsl(${(t*100)%360}, 100%, 50%)`; textCtx.fillText(state.textString, x, y); }
+                else if(state.textEffect === "BOUNCE") { const by = Math.abs(Math.sin(t*5))*100*lvl; textCtx.fillText(state.textString, x, y - by + (50*lvl)); }
+                else if(state.textEffect === "BREATHE") { const scale = 1 + Math.sin(t*3)*0.3*lvl; textCtx.save(); textCtx.translate(x + textWidth/2, y); textCtx.scale(scale, scale); textCtx.translate(-(x + textWidth/2), -y); textCtx.fillText(state.textString, x, y); textCtx.restore(); }
+                textCtx.globalAlpha = 1;
+            }
+            
+            // PREVIEW
+            previewCtx.clearRect(0,0,previewCanvas.width, previewCanvas.height);
+            previewCtx.drawImage(canvas, 0, 0, previewCanvas.width, previewCanvas.height);
+
+            requestAnimationFrame(render);
+        }
+
+        window.switchTab = (id, btn) => { document.querySelectorAll('.panel-content').forEach(e => e.classList.remove('visible')); document.getElementById(id).classList.add('visible'); document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('active')); if(btn) btn.classList.add('active'); };
+        
+        window.setEffect = (id, el) => { 
+            if (id === 0) { 
+                activateStatic('WHEEL'); 
+            } else { 
+                state.fxMode = id; 
+                state.mode = 'FX'; 
+                document.querySelectorAll('.fx-card').forEach(c => c.classList.remove('active')); 
+                el.classList.add('active'); 
+
+                // --- AUTO PRESETS LOGIC ---
+                // Param A = Structure/Zoom/Fréquence
+                // Param B = Couleur/Variation/Intensité
+                const presets = {
+                    // CINEMA FX
+                    1: {a: 50, b: 0},   // Police (Structure Std, Couleurs Pures)
+                    2: {a: 30, b: 25},  // Fire (Mvt Doux, Teinte Orange/Rouge Chaude)
+                    3: {a: 85, b: 10},  // Paparazzi (Rapide/Net, Blanc Froid)
+                    4: {a: 60, b: 40},  // TV (Grain Moyen, Désaturé)
+                    5: {a: 95, b: 5},   // Welding (Éclats vifs, Blanc Bleu)
+                    6: {a: 50, b: 50},  // Process
+                    7: {a: 40, b: 70},  // Bad Bulb (Flicker irrégulier, Teinte chaude)
+                    8: {a: 95, b: 0},   // Storm (Eclairs Nets, Blanc/Bleu Froid)
+                    9: {a: 15, b: 90},  // Candle (Très doux, Teinte très chaude/Rouge)
+                    10: {a: 100,b: 50}, // Strobe (Rapide)
+                    11: {a: 10, b: 15}, // Explosion (Large zone, Feu intense)
+                    14: {a: 20, b: 20}, // Fluorescent (Instable, Vert/Bleu)
+                    15: {a: 50, b: 0},  // Emergency (Rouge/Bleu pur)
+                    16: {a: 90, b: 10}, // Fireworks (Explosions fines)
+                    17: {a: 100,b: 15}, // Gunshot (Instantané, Jaune/Blanc)
+                    18: {a: 50, b: 100},// Red Alert (Pulse, Rouge pur)
+                    20: {a: 80, b: 0},  // Horror (Saccadé, Sombre)
+
+                    // SHNOPIA FX (Exemples)
+                    21: {a: 25, b: 50}, // Aurora (Vagues larges)
+                    22: {a: 60, b: 80}, // Matrix (Pluie fine, Vert Numérique)
+                    33: {a: 80, b: 20}, // Snow (Flocons fins, Teinte Froide)
+                    39: {a: 90, b: 30}, // Rain (Traits rapides, Gris/Bleu)
+                };
+
+                // Appliquer le preset ou 50/50 par défaut
+                const p = presets[id] || {a: 50, b: 50};
+                updateFxParam(1, p.a);
+                updateFxParam(2, p.b);
+            }
+        };
+        
+        window.setKelvin = (k, btn) => { 
+            state.kelvin = k; 
+            const inputK = document.getElementById('input-kelvin');
+            inputK.value = k;
+            updateRangeStyle(inputK);
+            document.getElementById('val-kelvin').innerText = k + "K";
+            const rgb = applyTint(kelvinToRgb(k), state.tint);
+            updateWhiteUI(rgb);
+            activateStatic('CCT'); 
+            document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+            if(btn) btn.classList.add('active');
+        };
+
+        window.setMapMode = (idx, el) => { state.mapMode = idx; document.querySelectorAll('.map-btn').forEach(b => b.classList.remove('active-map')); el.classList.add('active-map'); };
+        
+        window.activateStatic = (mode) => {
+            state.fxMode = 0; state.mode = mode; 
+            document.querySelectorAll('.fx-card').forEach(c => c.classList.remove('active'));
+            if(document.getElementById('fx-static')) document.getElementById('fx-static').classList.add('active');
+        };
+        
+        window.recallWhite = () => {
+            const rgb = state.whiteRgb;
+            document.getElementById('input-r').value = Math.round(rgb.r);
+            document.getElementById('input-g').value = Math.round(rgb.g);
+            document.getElementById('input-b').value = Math.round(rgb.b);
+            updateFromRGB(); activateStatic('WHEEL');
+        };
+
+        function updateRangeStyle(input) {
+            const val = (input.value - input.min) / (input.max - input.min) * 100;
+            let color = 'var(--lcd-on)';
+            if(input.id.includes('-r')) color = '#ff3333';
+            else if(input.id.includes('-g')) color = '#33ff33';
+            else if(input.id.includes('-b')) color = '#3388ff';
+            input.style.backgroundImage = `linear-gradient(to right, ${color} 0%, ${color} ${val}%, #004400 ${val}%, #004400 100%)`;
+        }
+
+        window.updateGridSlider = (el) => { state.gridLevel = parseInt(el.value); state.gridActive = (state.gridLevel > 1); document.getElementById('val-grid-lvl').innerText = `x${state.gridLevel}`; updateRangeStyle(el); };
+        window.updateWarpSlider = (el) => { state.warpLevel = parseInt(el.value); state.warpActive = (state.warpLevel > 0); document.getElementById('val-warp-lvl').innerText = state.warpLevel; updateRangeStyle(el); };
+        window.updateNoiseSlider = (el) => { state.noiseLevel = parseInt(el.value); state.noiseActive = (state.noiseLevel > 0); document.getElementById('val-noise-lvl').innerText = state.noiseLevel; updateRangeStyle(el); };
+        window.updateTextSlider = () => { const val = parseInt(document.getElementById('input-text-fx-lvl').value); state.textFxLvl = val; document.getElementById('val-text-fx-lvl').innerText = val + "%"; updateRangeStyle(document.getElementById('input-text-fx-lvl')); };
+        
+        window.toggleBlackout = () => { state.blackout = !state.blackout; const btn = document.getElementById('btn-blackout'); if(state.blackout) btn.classList.add('active'); else btn.classList.remove('active'); };
+        window.toggleFS = () => { !document.fullscreenElement ? document.documentElement.requestFullscreen() : document.exitFullscreen(); };
+        window.togglePreviewFS = () => { minimizePanel(); if(!document.fullscreenElement) document.documentElement.requestFullscreen(); };
+        document.addEventListener("fullscreenchange", () => { const btn = document.querySelector('.fullscreen-btn'); if (document.fullscreenElement) btn.classList.add('active'); else btn.classList.remove('active'); });
+        window.toggleText = () => { 
+            state.textOn = !state.textOn; 
+            const d = DICT[CURRENT_LANG];
+            const btn = document.getElementById('btn-text-toggle'); 
+            if(state.textOn) { btn.innerText = d.TEXT_ON; btn.classList.add('active'); state.textPos = textCanvas.width; } else { btn.innerText = d.TEXT_OFF; btn.classList.remove('active'); } 
+        };
+        window.minimizePanel = () => { document.getElementById('main-panel').classList.add('hidden'); };
+        window.restorePanel = () => { document.getElementById('main-panel').classList.remove('hidden'); };
+        function handleGlobalClick(e) { 
+            const panel = document.getElementById('main-panel'); 
+            const langMenu = document.getElementById('lang-menu');
+            if(langMenu.classList.contains('show') && e.target.className !== 'lang-icon') langMenu.classList.remove('show');
+            if (panel.classList.contains('hidden')) { restorePanel(); } else { if (e.target.id !== 'modal-overlay') { minimizePanel(); if (!document.fullscreenElement) document.documentElement.requestFullscreen(); } } 
+        }
+        window.showCustomMatrixModal = () => { document.getElementById('modal-overlay').style.display = 'flex'; };
+        window.closeModalOnOutside = (e) => { if(e.target.id === 'modal-overlay') document.getElementById('modal-overlay').style.display = 'none'; };
+        
+        window.applyCustomMatrix = () => {
+            const w = parseInt(document.getElementById('custom-w').value) || 1; const h = parseInt(document.getElementById('custom-h').value) || 1;
+            MAPS[14] = {w: w, h: h}; state.mapMode = 14; 
+            setMapMode(14, document.getElementById('btn-set')); document.getElementById('set-display').innerText = `${w}x${h}`; document.getElementById('set-display').style.color = '#0f0'; document.getElementById('modal-overlay').style.display = 'none';
+        };
+
+        document.getElementById('text-content').oninput = e => state.textString = e.target.value;
+        document.getElementById('input-text-size').oninput = e => { state.textSize = parseInt(e.target.value); document.getElementById('val-text-size').innerText = state.textSize + "%"; updateRangeStyle(e.target); };
+        document.getElementById('input-text-speed').oninput = e => { state.textSpeed = parseInt(e.target.value); document.getElementById('val-text-speed').innerText = state.textSpeed; updateRangeStyle(e.target); };
+        document.getElementById('input-text-color').oninput = e => state.textColor = e.target.value;
+        document.getElementById('input-text-font').onchange = e => state.textFont = e.target.value;
+        document.getElementById('input-text-effect').onchange = e => state.textEffect = e.target.value;
+        
+        function linkInputRange(inputId, rangeId, updateFunc) {
+            const input = document.getElementById(inputId);
+            const range = document.getElementById(rangeId);
+            input.addEventListener('change', () => { 
+                let val = parseInt(input.value); 
+                if(isNaN(val)) val = 0; if(val < 0) val = 0; if(val > parseInt(input.max)) val = parseInt(input.max);
+                input.value = val; range.value = val; 
+                updateRangeStyle(range);
+                updateFunc(); 
+            });
+        }
+        
+        linkInputRange('val-sat-input', 'input-sat', () => { 
+            state.sat = document.getElementById('input-sat').value; state.val = 100;
+            const rgb = hsvToRgb(state.hue, state.sat, state.val); document.getElementById('hex-input').value = rgbToHex(rgb[0], rgb[1], rgb[2]); updateRGBInputs(rgb);
+            updateCursorVisuals(); activateStatic('WHEEL');
+        });
+        
+        linkInputRange('val-r-input', 'input-r', () => { updateFromRGB(); activateStatic('WHEEL'); });
+        linkInputRange('val-g-input', 'input-g', () => { updateFromRGB(); activateStatic('WHEEL'); });
+        linkInputRange('val-b-input', 'input-b', () => { updateFromRGB(); activateStatic('WHEEL'); });
+        
+        linkInputRange('val-white-r-input', 'input-white-r', updateFromWhiteRGB);
+        linkInputRange('val-white-g-input', 'input-white-g', updateFromWhiteRGB);
+        linkInputRange('val-white-b-input', 'input-white-b', updateFromWhiteRGB);
+
+        linkInputRange('val-dimmer-input', 'input-dimmer', () => { state.dimmer = parseInt(document.getElementById('input-dimmer').value); });
+        linkInputRange('val-speed-input', 'input-speed', () => { state.speedCinema = parseInt(document.getElementById('input-speed').value); });
+        linkInputRange('val-speed-shnopia-input', 'input-speed-shnopia', () => { state.speedShnopia = parseInt(document.getElementById('input-speed-shnopia').value); });
+        
+        document.getElementById('input-dimmer').oninput = e => { state.dimmer = parseInt(e.target.value); document.getElementById('val-dimmer-input').value = state.dimmer; updateRangeStyle(e.target); };
+        document.getElementById('input-speed').oninput = e => { state.speedCinema = parseInt(e.target.value); document.getElementById('val-speed-input').value = state.speedCinema; updateRangeStyle(e.target); };
+        document.getElementById('input-speed-shnopia').oninput = e => { state.speedShnopia = parseInt(e.target.value); document.getElementById('val-speed-shnopia-input').value = state.speedShnopia; updateRangeStyle(e.target); };
+        
+        document.getElementById('input-sat').oninput = e => { 
+            state.sat = e.target.value; state.val = 100; document.getElementById('val-sat-input').value = state.sat; 
+            const rgb = hsvToRgb(state.hue, state.sat, state.val); document.getElementById('hex-input').value = rgbToHex(rgb[0], rgb[1], rgb[2]); updateRGBInputs(rgb);
+            updateCursorVisuals(); activateStatic('WHEEL');
+            updateRangeStyle(e.target);
+        };
+        
+        document.getElementById('input-kelvin').oninput = e => { state.kelvin = parseInt(e.target.value); updateCCT(); updateRangeStyle(e.target); };
+        document.getElementById('input-tint').oninput = e => { state.tint = e.target.value; updateCCT(); updateRangeStyle(e.target); };
+        
+        function updateCCT() {
+           const k = state.kelvin; const t = state.tint; document.getElementById('val-kelvin').innerText = k + "K"; document.getElementById('val-tint').innerText = t;
+           const rgb = applyTint(kelvinToRgb(k), t); updateWhiteUI(rgb); activateStatic('CCT');
+        }
+        function updateWhiteUI(rgb) {
+            state.whiteRgb = rgb;
+            document.getElementById('input-white-r').value = Math.round(rgb.r); document.getElementById('val-white-r-input').value = Math.round(rgb.r); updateRangeStyle(document.getElementById('input-white-r'));
+            document.getElementById('input-white-g').value = Math.round(rgb.g); document.getElementById('val-white-g-input').value = Math.round(rgb.g); updateRangeStyle(document.getElementById('input-white-g'));
+            document.getElementById('input-white-b').value = Math.round(rgb.b); document.getElementById('val-white-b-input').value = Math.round(rgb.b); updateRangeStyle(document.getElementById('input-white-b'));
+            document.getElementById('hex-input-white').value = rgbToHex(rgb.r, rgb.g, rgb.b);
+        }
+        function updateFromWhiteRGB() {
+            const r = parseInt(document.getElementById('input-white-r').value); const g = parseInt(document.getElementById('input-white-g').value); const b = parseInt(document.getElementById('input-white-b').value);
+            document.getElementById('val-white-r-input').value = r; document.getElementById('val-white-g-input').value = g; document.getElementById('val-white-b-input').value = b;
+            state.whiteRgb = {r:r, g:g, b:b}; document.getElementById('hex-input-white').value = rgbToHex(r, g, b); activateStatic('CCT');
+            updateRangeStyle(document.getElementById('input-white-r'));
+            updateRangeStyle(document.getElementById('input-white-g'));
+            updateRangeStyle(document.getElementById('input-white-b'));
+        }
+        ['input-white-r', 'input-white-g', 'input-white-b'].forEach(id => document.getElementById(id).addEventListener('input', updateFromWhiteRGB));
+        document.getElementById('hex-input-white').addEventListener('change', e => { let hex = e.target.value; if(!hex.startsWith('#')) hex='#'+hex; const rgb = hexToRgb(hex); state.whiteRgb = rgb; updateWhiteUI(rgb); activateStatic('CCT'); });
+
+        function updateRGBInputs(rgb) { 
+            const r = Math.round(rgb[0] || rgb.r); const g = Math.round(rgb[1] || rgb.g); const b = Math.round(rgb[2] || rgb.b);
+            document.getElementById('input-r').value = r; document.getElementById('val-r-input').value = r; updateRangeStyle(document.getElementById('input-r'));
+            document.getElementById('input-g').value = g; document.getElementById('val-g-input').value = g; updateRangeStyle(document.getElementById('input-g'));
+            document.getElementById('input-b').value = b; document.getElementById('val-b-input').value = b; updateRangeStyle(document.getElementById('input-b'));
+        }
+        
+        function updateFromRGB() {
+             const r = parseInt(document.getElementById('input-r').value); const g = parseInt(document.getElementById('input-g').value); const b = parseInt(document.getElementById('input-b').value);
+             document.getElementById('val-r-input').value = r; document.getElementById('val-g-input').value = g; document.getElementById('val-b-input').value = b;
+             updateRangeStyle(document.getElementById('input-r'));
+             updateRangeStyle(document.getElementById('input-g'));
+             updateRangeStyle(document.getElementById('input-b'));
+             
+             const hex = rgbToHex(r, g, b); const hsv = rgbToHsv(r, g, b);
+             state.hue = hsv.h; state.sat = hsv.s; state.val = hsv.v;
+             
+             document.getElementById('hex-input').value = hex; document.getElementById('input-sat').value = state.sat; document.getElementById('val-sat-input').value = Math.round(state.sat);
+             updateRangeStyle(document.getElementById('input-sat'));
+             updateCursorVisuals();
+        }
+        
+        function updateCursorVisuals() {
+            const container = document.getElementById('color-wheel'); const cursor = document.getElementById('wheel-cursor'); const rect = container.getBoundingClientRect(); const radius = rect.width / 2;
+            const rad = (state.hue - 90) * (Math.PI / 180); const dist = (state.sat / 100) * radius;
+            cursor.style.left = (radius + Math.cos(rad) * dist) + 'px'; cursor.style.top = (radius + Math.sin(rad) * dist) + 'px';
+        }
+        
+        window.addEventListener('resize', () => { if(state.mode === 'WHEEL') updateCursorVisuals(); });
+        ['input-r', 'input-g', 'input-b'].forEach(id => { document.getElementById(id).addEventListener('input', () => { updateFromRGB(); activateStatic('WHEEL'); }); });
+
+        const wheel = document.getElementById('color-wheel'); const hexInput = document.getElementById('hex-input');
+        let isWheelDrag = false;
+        function updateWheel(e) {
+            const rect = wheel.getBoundingClientRect(); const radius = rect.width / 2;
+            const x = e.touches ? e.touches[0].clientX : e.clientX; const y = e.touches ? e.touches[0].clientY : e.clientY;
+            const dx = x - (rect.left + radius); const dy = y - (rect.top + radius);
+            const dist = Math.min(Math.sqrt(dx*dx + dy*dy), radius);
+            let ang = Math.atan2(dy, dx) * (180 / Math.PI); if(ang < 0) ang += 360;
+            
+            state.hue = (ang + 90) % 360; state.sat = (dist / radius) * 100; state.val = 100;
+            document.getElementById('input-sat').value = state.sat; document.getElementById('val-sat-input').value = Math.round(state.sat); updateRangeStyle(document.getElementById('input-sat'));
+            updateCursorVisuals(); 
+            const rgb = hsvToRgb(state.hue, state.sat, 100); hexInput.value = rgbToHex(rgb[0], rgb[1], rgb[2]); updateRGBInputs(rgb); 
+        }
+
+        hexInput.addEventListener('change', (e) => {
+            let hex = e.target.value; if(!hex.startsWith('#')) hex = '#' + hex;
+            const rgb = hexToRgb(hex); document.getElementById('input-r').value = rgb.r; document.getElementById('input-g').value = rgb.g; document.getElementById('input-b').value = rgb.b;
+            updateFromRGB(); activateStatic('WHEEL');
+        });
+        
+        updateCursorVisuals(); // Init pos
+        wheel.addEventListener('mousedown', e => { isWheelDrag=true; activateStatic('WHEEL'); updateWheel(e); }); 
+        window.addEventListener('mousemove', e => { if(isWheelDrag) { e.preventDefault(); updateWheel(e); } }); 
+        window.addEventListener('mouseup', () => isWheelDrag=false);
+        wheel.addEventListener('touchstart', e => { isWheelDrag=true; activateStatic('WHEEL'); updateWheel(e); }, {passive:false}); 
+        window.addEventListener('touchmove', e => { if(isWheelDrag) { e.preventDefault(); updateWheel(e); } }, {passive:false}); 
+        window.addEventListener('touchend', () => isWheelDrag=false);
+
+        const panel = document.getElementById('main-panel'); const handle = document.getElementById('drag-handle'); let isDrag=false, startX, startY, initL, initT;
+        handle.addEventListener('mousedown', e => { isDrag=true; startX=e.clientX; startY=e.clientY; const r=panel.getBoundingClientRect(); panel.style.transform='none'; panel.style.left=r.left+'px'; panel.style.top=r.top+'px'; initL=r.left; initT=r.top; });
+        window.addEventListener('mousemove', e => { if(isDrag){ panel.style.left=(initL+(e.clientX-startX))+'px'; panel.style.top=(initT+(e.clientY-startY))+'px'; }});
+        window.addEventListener('mouseup', ()=>isDrag=false);
+
+        function initSliderStyles() {
+            document.querySelectorAll('input[type=range]').forEach(el => updateRangeStyle(el));
+        }
+
+        window.updateFxParam = (id, val) => {
+            val = parseInt(val);
+            state['fxParam'+id] = val;
+            
+            ['fx', 'shnopia'].forEach(tab => {
+                const label = document.getElementById(`val-${tab}-p${id}`);
+                const input = document.getElementById(`input-${tab}-p${id}`);
+                if(label) label.innerText = val + "%";
+                if(input) { input.value = val; updateRangeStyle(input); }
+            });
+        };
+
+        function syncUI() {
+            document.getElementById('val-sat-input').value = Math.round(state.sat); document.getElementById('val-kelvin').innerText = state.kelvin + "K"; document.getElementById('val-tint').innerText = state.tint;
+            document.getElementById('val-speed-input').value = state.speedCinema; document.getElementById('val-speed-shnopia-input').value = state.speedShnopia;
+            document.getElementById('val-text-size').innerText = state.textSize + "%"; document.getElementById('val-text-speed').innerText = state.textSpeed; document.getElementById('val-dimmer-input').value = state.dimmer;
+            
+            document.getElementById('input-sat').value = state.sat; document.getElementById('input-kelvin').value = state.kelvin; document.getElementById('input-tint').value = state.tint;
+            document.getElementById('input-speed').value = state.speedCinema; document.getElementById('input-speed-shnopia').value = state.speedShnopia;
+            document.getElementById('input-text-size').value = state.textSize; document.getElementById('input-text-speed').value = state.textSpeed; document.getElementById('input-dimmer').value = state.dimmer;
+            
+            const rgb = hsvToRgb(state.hue, state.sat, 100); updateRGBInputs(rgb);
+            const wRgb = applyTint(kelvinToRgb(state.kelvin), state.tint); updateWhiteUI(wRgb);
+
+            const gridInput = document.getElementById('input-grid-lvl'); gridInput.value = state.gridLevel; updateGridSlider(gridInput);
+            const warpInput = document.getElementById('input-warp-lvl'); warpInput.value = state.warpLevel; updateWarpSlider(warpInput);
+            const noiseInput = document.getElementById('input-noise-lvl'); noiseInput.value = state.noiseLevel; updateNoiseSlider(noiseInput);
+            
+            document.querySelectorAll('.map-btn').forEach((btn, index) => {
+                // The OFF button is virtual (-1) so we handle it manually or skip
+                if(btn.innerText.includes("OFF")) {
+                    if(state.mapMode === -1) btn.classList.add('active-map');
+                    else btn.classList.remove('active-map');
+                } else {
+                    // Indices 0 to 13 map to other buttons
+                    // We need a way to map button index to mapMode.
+                    // Simplified: just update visual class in setMapMode
+                }
+            });
+
+            document.getElementById('text-content').value = state.textString;
+            document.getElementById('input-text-color').value = state.textColor;
+            document.getElementById('input-text-font').value = state.textFont;
+            document.getElementById('input-text-effect').value = state.textEffect;
+            const textLvlInput = document.getElementById('input-text-fx-lvl'); textLvlInput.value = state.textFxLvl; updateTextSlider();
+            const textToggle = document.getElementById('btn-text-toggle');
+            if(state.textOn) { textToggle.innerText = DICT[CURRENT_LANG].TEXT_ON; textToggle.classList.add('active'); } 
+            else { textToggle.innerText = DICT[CURRENT_LANG].TEXT_OFF; textToggle.classList.remove('active'); }
+
+            if (document.fullscreenElement) document.querySelector('.fullscreen-btn').classList.add('active');
+            
+            initSliderStyles();
+            setTimeout(updateCursorVisuals, 100);
+
+            // SYNC FX PARAMS
+            [1, 2].forEach(id => updateFxParam(id, state['fxParam'+id]));
+        }
+        
+        initSliderStyles();
+        syncUI();
+        requestAnimationFrame(render);
+
+// --- HYBRID COUNTER (Global + Local Fallback) ---
+        (function() {
+            const counterEl = document.getElementById('global-counter');
+            
+            // 1. D'abord, on incrémente un compteur local de secours
+            let localVisits = localStorage.getItem('shnopia_local_boots') || 0;
+            localVisits++;
+            localStorage.setItem('shnopia_local_boots', localVisits);
+
+            // 2. On tente de joindre le compteur mondial (API plus fiable: counterapi.dev)
+            // On utilise un timeout de 2 secondes pour ne pas attendre indéfiniment
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+            fetch('https://api.counterapi.dev/v1/shnopia_sle/visits/up', { signal: controller.signal })
+            .then(response => {
+                if (!response.ok) throw new Error("API Error");
+                return response.json();
+            })
+            .then(data => {
+                // SUCCÈS : On affiche le compteur mondial
+                const count = data.count; // Note: l'API renvoie 'count', pas 'value'
+                counterEl.innerText = "NET: #" + count.toString().padStart(6, '0');
+                counterEl.style.color = "var(--lcd-on)";
+            })
+            .catch(err => {
+                // ÉCHEC (Pas internet ou API HS) : On affiche le compteur Local
+                console.warn("Switching to local counter:", err);
+                counterEl.innerText = "LOC: #" + localVisits.toString().padStart(4, '0');
+                counterEl.style.color = "#ccaa00"; // Couleur ambre pour signaler le mode local
+            });
+        })();
+    </script>
+</body>
+</html>
