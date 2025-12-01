@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manuel Utilisateur | Shnopia Light Engine V7.77</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Orbitron:wght@500;900&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --bg: #050a05; 
+            --panel: #0a140a;
+            --text: #e0e0e0; 
+            --accent: #33ff33; 
+            --dim-accent: #004400;
+            --highlight: #f5a623;
+        }
+        body { 
+            background-color: var(--bg); color: var(--text); 
+            font-family: 'Roboto Mono', monospace; margin: 0; padding: 20px;
+            line-height: 1.8;
+        }
+        .container { max-width: 900px; margin: 0 auto; background: var(--panel); padding: 40px; border: 1px solid var(--dim-accent); border-radius: 8px; box-shadow: 0 0 50px #000; }
+        
+        /* --- LANG BAR --- */
+        .lang-bar {
+            display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;
+        }
+        .lang-link {
+            font-family: 'Orbitron'; font-size: 12px; color: var(--dim-accent); 
+            border: 1px solid var(--dim-accent); padding: 5px 15px; cursor: pointer; 
+            border-radius: 4px; transition: 0.2s; text-decoration: none; font-weight: bold;
+        }
+        .lang-link:hover { color: #fff; border-color: #fff; transform: scale(1.1); }
+        .lang-link.active { color: var(--accent); border-color: var(--accent); background: #002200; box-shadow: 0 0 8px var(--dim-accent); }
+
+        /* --- LAUNCH BUTTONS (MODIFIED) --- */
+        .launch-wrapper { text-align: center; margin-bottom: 40px; }
+        .launch-btn {
+            display: inline-block;
+            background: #002200;
+            color: var(--accent);
+            border: 2px solid var(--accent);
+            /* Ajustement taille pour faire tenir les deux */
+            padding: 12px 20px; 
+            margin: 10px; 
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: 900;
+            text-decoration: none;
+            border-radius: 6px;
+            box-shadow: 0 0 15px rgba(51, 255, 51, 0.3);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: pulse-green 2s infinite;
+        }
+        .launch-btn:hover {
+            background: var(--accent);
+            color: #000;
+            box-shadow: 0 0 30px rgba(51, 255, 51, 0.8);
+            transform: scale(1.05);
+        }
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 15px rgba(51, 255, 51, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(51, 255, 51, 0.6); }
+            100% { box-shadow: 0 0 15px rgba(51, 255, 51, 0.3); }
+        }
+
+        /* --- BRANDING --- */
+        .rossignol-box { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            margin-bottom: 40px; padding: 30px 20px; background: #001a00; 
+            border-radius: 8px; border: 2px solid var(--dim-accent); 
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        }
+        .rossignol-brand { 
+            font-family: 'Orbitron'; font-size: 24px;
+            color: var(--accent); 
+            display: flex; align-items: center; justify-content: center; gap: 15px; 
+            margin-bottom: 10px; font-weight: 900; letter-spacing: 2px;
+            width: 100%; text-align: center; flex-wrap: wrap;
+            text-shadow: 0 0 10px rgba(51, 255, 51, 0.4);
+        }
+        .rossignol-icon { font-size: 32px; }
+        
+        .contact-link { 
+            font-family: 'Roboto Mono'; font-size: 16px;
+            color: #00cc00; font-weight: bold;
+            text-decoration: none; border-bottom: 1px dotted var(--dim-accent); transition: 0.2s;
+            padding-bottom: 2px;
+        }
+        .contact-link:hover { color: #fff; border-color: #fff; text-shadow: 0 0 8px #fff; }
+
+        /* --- CONTENT --- */
+        h1, h2, h3 { font-family: 'Orbitron', sans-serif; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+        h1 { text-align: center; border-bottom: 2px solid var(--dim-accent); padding-bottom: 20px; margin-bottom: 40px; text-shadow: 0 0 10px var(--dim-accent); font-size: 2em; }
+        h2 { border-left: 4px solid var(--accent); padding-left: 15px; margin-top: 50px; background: linear-gradient(90deg, #001a00, transparent); font-size: 1.4em; padding-bottom: 5px; }
+        h3 { color: #88ff88; margin-top: 30px; font-size: 1.1em; border-bottom: 1px solid var(--dim-accent); display: inline-block; padding-bottom: 2px; }
+        p { font-size: 0.95em; text-align: justify; color: #ccc; margin-bottom: 15px; }
+        ul { list-style-type: square; padding-left: 20px; color: #bbb; }
+        li { margin-bottom: 10px; font-size: 0.95em; }
+        strong { color: #fff; font-weight: bold; }
+        .tag { display: inline-block; background: var(--dim-accent); color: var(--accent); padding: 2px 8px; border-radius: 3px; font-size: 0.75em; font-family: 'Orbitron'; vertical-align: middle; border: 1px solid var(--accent); margin: 0 2px; }
+        
+        .tip { color: #55ffff; border: 1px solid #005555; background: #002222; padding: 15px; border-radius: 4px; font-size: 0.9em; margin: 20px 0; display: flex; gap: 10px; align-items: flex-start; }
+        .tip::before { content: '💡'; font-size: 1.2em; }
+        
+        .footer { text-align: center; margin-top: 60px; font-size: 0.8em; color: var(--dim-accent); border-top: 1px solid var(--dim-accent); padding-top: 20px; font-family: 'Orbitron'; }
+        
+        .content-block { display: none; }
+        .content-block.visible { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="lang-bar">
+            <div class="lang-link active" onclick="setLang('FR', this)">FRANÇAIS</div>
+            <div class="lang-link" onclick="setLang('EN', this)">ENGLISH</div>
+            <div class="lang-link" onclick="setLang('ES', this)">ESPAÑOL</div>
+            <div class="lang-link" onclick="setLang('RU', this)">РУССКИЙ</div>
+            <div class="lang-link" onclick="setLang('JP', this)">日本語</div>
+            <div class="lang-link" onclick="setLang('PL', this)">POLSKI</div>
+        </div>
+
+        <div class="launch-wrapper">
+            <a href="https://lightmyscreen.com" target="_blank" class="launch-btn" id="launch-btn-text">
+                Lancer l'interface maintenant
+            </a>
+            <a href="index.html" download="SLE V7.77 Final.html" class="launch-btn" id="dl-btn-text">
+                📥 Télécharger App Offline
+            </a>
+        </div>
+
+        <div class="rossignol-box">
+            <div class="rossignol-brand">
+                <span class="rossignol-icon">🐦</span> Rossignol Grip Vibe Coding
+            </div>
+            <a href="mailto:rossignol.p@gmail.com" class="contact-link">Contact: rossignol.p@gmail.com</a>
+        </div>
+
+        <div id="FR" class="content-block visible">
+            <h1>Manuel Complet V7.77</h1>
+            <p>Bienvenue dans le manuel étendu du Shnopia Light Engine (SLE). Cet outil transforme votre écran (ordinateur, tablette, téléphone) en un panneau d'éclairage LED professionnel et interactif. Il est conçu pour les directeurs de la photographie, vidéastes et créateurs de contenu qui ont besoin d'une source lumineuse contrôlable, dynamique et précise sans matériel supplémentaire.</p>
+
+            <h2>1. Prise en Main & Interface</h2>
+            <p>L'interface est divisée en trois zones principales pour une accessibilité maximale, même dans l'obscurité d'un plateau de tournage.</p>
+            <ul>
+                <li><strong>Le Header (Haut) :</strong> Permet de changer la langue, de voir un aperçu en temps réel de la sortie lumière (Preview) et de masquer l'interface complète via le bouton <span class="tag">HIDE ME</span> pour ne laisser que la lumière visible.</li>
+                <li><strong>La Zone Centrale (Onglets) :</strong> C'est ici que vous choisissez le mode de fonctionnement (Couleur, Blanc, Effets, etc.). Chaque onglet correspond à un usage spécifique.</li>
+                <li><strong>Le Footer (Bas) :</strong> Il contient les contrôles globaux qui affectent tout le système.
+                    <ul>
+                        <li><strong>Master Dimmer :</strong> Règle l'intensité lumineuse globale de 0% à 100%.</li>
+                        <li><strong>Blackout :</strong> Coupe instantanément toute lumière (noir total) tant qu'il est activé.</li>
+                        <li><strong>Full Screen :</strong> Force l'application en plein écran pour éliminer les barres de menu du navigateur.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h2>2. Onglet LIVE (Performance & Mémoire)</h2>
+            <p>L'onglet Live est votre tableau de bord de performance. Il permet de mémoriser des états complexes (une couleur précise, un effet avec ses réglages de vitesse, une matrice spécifique) et de les rappeler instantanément.</p>
+            
+            <h3>Comment enregistrer une scène ?</h3>
+            <p>1. Réglez votre lumière comme vous le souhaitez dans les autres onglets (ex: un effet Feu avec une teinte spécifique).<br>
+            2. Revenez dans l'onglet <strong>LIVE</strong>.<br>
+            3. Cliquez sur le bouton <span class="tag">SAVE</span> situé sous l'un des 16 pads.<br>
+            4. Le bouton clignote en <strong>ROUGE</strong>. Pendant ce temps (environ 2 secondes), le système enregistre tous les paramètres ET capture une courte vidéo de votre effet.<br>
+            5. Une fois terminé, le pad affiche la vidéo en boucle de votre effet.</p>
+
+            <h3>Comment rappeler une scène ?</h3>
+            <p>Cliquez simplement sur l'image du pad. Tous les paramètres (Vitesse, Couleur, Effet, Matrix) sont immédiatement restaurés à l'état exact de l'enregistrement.</p>
+
+            <h2>3. Gestion de la Couleur</h2>
+            <p>Le SLE offre deux méthodes distinctes pour gérer la couleur, selon vos besoins artistiques.</p>
+
+            <h3>Onglet COLOR (Mode HSI/RGB)</h3>
+            <p>Idéal pour les couleurs saturées et artistiques.</p>
+            <ul>
+                <li><strong>Roue Chromatique :</strong> Déplacez le curseur pour choisir la teinte et la saturation intuitivement.</li>
+                <li><strong>Sliders RGB :</strong> Pour un réglage mathématique précis (0-255). Vous pouvez cliquer sur les chiffres verts à droite des sliders pour entrer une valeur précise au clavier.</li>
+                <li><strong>Mémoires Rapides :</strong> En bas de page, 5 slots de mémoire couleur. Cliquez sur la case colorée pour appliquer, ou sur le bouton "SAVE" en dessous pour stocker la couleur actuelle.</li>
+            </ul>
+
+            <h3>Onglet WHITE (Mode CCT)</h3>
+            <p>Conçu pour reproduire la lumière blanche de haute qualité.</p>
+            <ul>
+                <li><strong>Kelvin (Température) :</strong> De 1750K (très chaud, bougie) à 10000K (très froid, ciel bleu).</li>
+                <li><strong>Tint (Teinte) :</strong> Permet de corriger la dérive Vert/Magenta, indispensable pour matcher avec d'autres sources LED ou néons.</li>
+                <li><strong>Presets :</strong> Boutons d'accès rapide aux standards cinéma (3200K Tungstène, 5600K Lumière du jour, etc.).</li>
+            </ul>
+
+            <h2>4. Moteur d'Effets (FX)</h2>
+            <p>Le moteur d'effets V7.77 est procédural : il génère les effets mathématiquement en temps réel, ce qui permet une modification fluide sans coupure. Des préréglages automatiques ajustent désormais la structure et la variation pour chaque effet sélectionné.</p>
+
+            <h3>Les Contrôles Paramétriques</h3>
+            <p>Chaque effet (dans Cinema FX ou Shnopia FX) est piloté par 3 curseurs :</p>
+            <ul>
+                <li><strong>1. VITESSE (Slider du haut) :</strong> Gère le temps. Plus il est haut, plus l'animation est rapide.</li>
+                <li><strong>2. PARAM A (Slider Bas Gauche) - STRUCTURE :</strong> Gère l'espace et la forme.
+                    <br><em>Exemples :</em> Zoom dans le feu, densité des flashs paparazzi, épaisseur des lignes scanner, fréquence spatiale des motifs.</li>
+                <li><strong>3. PARAM B (Slider Bas Droite) - VARIATION :</strong> Gère l'apparence.
+                    <br><em>Exemples :</em> Changement de teinte (Hue shift), Saturation, Ajout de bruit, Chaos. <strong>Note importante :</strong> Ce slider ne baisse plus la luminosité générale, il modifie la texture de l'effet.</li>
+            </ul>
+
+            <div class="tip">
+                <strong>Fonction Color Override :</strong> En haut des onglets FX, vous verrez vos 5 mémoires de couleur. Si vous cliquez dessus pour les activer (cadre vert), l'effet en cours (ex: Feu) abandonnera ses couleurs naturelles pour utiliser VOS couleurs sélectionnées. Activez plusieurs couleurs pour créer des cycles multicolores personnalisés.
+            </div>
+
+            <h2>5. Onglet MATRIX (Pixel Mapping)</h2>
+            <p>Cet onglet est crucial pour le réalisme. Il permet de simuler la résolution de véritables panneaux LED, évitant ainsi l'aspect "trop numérique" d'un écran d'ordinateur.</p>
+            <ul>
+                <li><strong>Presets :</strong> Choisissez une configuration standard (ex: Titan 8x16 pixels). L'image sera pixelisée pour correspondre à cette grille.</li>
+                <li><strong>OFF (HD) :</strong> Le premier bouton désactive la matrice pour utiliser la résolution native de votre écran (image lisse et nette).</li>
+                <li><strong>Modificateurs :</strong>
+                    <ul>
+                        <li><strong>Multiplier :</strong> Divise la grille virtuelle pour augmenter la résolution tout en gardant le ratio.</li>
+                        <li><strong>Warp :</strong> Applique une déformation liquide à l'image.</li>
+                        <li><strong>Noise :</strong> Ajoute du grain numérique pour casser l'uniformité.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h2>6. Onglet TEXT</h2>
+            <p>Transformez votre écran en enseigne lumineuse ou prompteur.</p>
+            <ul>
+                <li>Saisissez votre texte dans le champ dédié.</li>
+                <li>Cliquez sur le bouton <span class="tag">TEXTE: OFF</span> pour le passer à <span class="tag">ON</span>.</li>
+                <li><strong>Vitesse :</strong> Règle la vitesse de défilement (0 = texte fixe centré).</li>
+                <li><strong>Effets :</strong> Ajoutez du style (Neon glow, Glitch numérique, Effet miroir pour réflexion, etc.).</li>
+                <li><strong>Intensité :</strong> Ce slider dose la force de l'effet choisi (ex: quantité de glitch).</li>
+            </ul>
+        </div>
+
+        <div id="EN" class="content-block">
+            <h1>Comprehensive Manual V7.77</h1>
+            <p>Welcome to the extended manual for Shnopia Light Engine (SLE). This tool transforms any screen (computer, tablet, phone) into a professional, interactive LED lighting panel. Designed for cinematographers, videographers, and content creators needing a controllable, dynamic light source without extra hardware.</p>
+
+            <h2>1. Getting Started & Interface</h2>
+            <p>The interface is divided into three main zones for maximum accessibility, even on a dark film set.</p>
+            <ul>
+                <li><strong>Header (Top):</strong> Change language, view real-time light output (Preview), and hide the interface via the <span class="tag">HIDE ME</span> button to leave only the light visible.</li>
+                <li><strong>Central Zone (Tabs):</strong> Choose your operating mode (Color, White, Effects, etc.). Each tab corresponds to a specific use case.</li>
+                <li><strong>Footer (Bottom):</strong> Global controls affecting the entire system.
+                    <ul>
+                        <li><strong>Master Dimmer:</strong> Sets global brightness intensity from 0% to 100%.</li>
+                        <li><strong>Blackout:</strong> Instantly cuts all light output (total black) as long as it is active.</li>
+                        <li><strong>Full Screen:</strong> Forces the app into full screen to remove browser menus and bars.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h2>2. LIVE Tab (Performance & Memory)</h2>
+            <p>The Live tab is your performance dashboard. It allows you to memorize complex states (a specific color, an effect with its speed settings, a specific matrix) and recall them instantly.</p>
+            
+            <h3>How to Save a Scene?</h3>
+            <p>1. Set your light as desired in other tabs (e.g., a Fire effect with a specific tint).<br>
+            2. Return to the <strong>LIVE</strong> tab.<br>
+            3. Click the <span class="tag">SAVE</span> button under one of the 16 pads.<br>
+            4. The button flashes <strong>RED</strong>. During this time (approx. 2 seconds), the system records all parameters AND captures a short video loop of your effect.<br>
+            5. Once done, the pad displays the looping video of your effect.</p>
+
+            <h3>How to Recall a Scene?</h3>
+            <p>Simply click on the pad's image. All parameters (Speed, Color, Effect, Matrix) are immediately restored to the exact state of the recording.</p>
+
+            <h2>3. Color Management</h2>
+            <p>SLE offers two distinct methods for managing color, depending on your artistic needs.</p>
+
+            <h3>COLOR Tab (HSI/RGB Mode)</h3>
+            <p>Ideal for saturated and artistic colors.</p>
+            <ul>
+                <li><strong>Color Wheel:</strong> Move the cursor to intuitively choose hue and saturation.</li>
+                <li><strong>RGB Sliders:</strong> For precise mathematical tuning (0-255). You can click the green numbers to the right of the sliders to type a precise value.</li>
+                <li><strong>Quick Memories:</strong> At the bottom of the page, 5 color memory slots. Click the colored box to apply, or the "SAVE" button below to store the current color.</li>
+            </ul>
+
+            <h3>WHITE Tab (CCT Mode)</h3>
+            <p>Designed to reproduce high-quality white light.</p>
+            <ul>
+                <li><strong>Kelvin (Temperature):</strong> From 1750K (very warm, candle) to 10000K (very cold, blue sky).</li>
+                <li><strong>Tint:</strong> Allows correction of Green/Magenta shift, essential for matching with other LED sources or neon lights.</li>
+                <li><strong>Presets:</strong> Quick access buttons to cinema standards (3200K Tungsten, 5600K Daylight, etc.).</li>
+            </ul>
+
+            <h2>4. Effects Engine (FX)</h2>
+            <p>The V7.77 effects engine is procedural: it generates effects mathematically in real-time, allowing for fluid modification without stuttering. Automatic presets now adjust structure and variation for each selected effect.</p>
+
+            <h3>Parametric Controls</h3>
+            <p>Each effect (in Cinema FX or Shnopia FX) is driven by 3 sliders:</p>
+            <ul>
+                <li><strong>1. SPEED (Top Slider):</strong> Manages time. The higher it is, the faster the animation.</li>
+                <li><strong>2. PARAM A (Bottom Left Slider) - STRUCTURE:</strong> Manages space and shape.
+                    <br><em>Examples:</em> Zoom in fire, density of paparazzi flashes, thickness of scanner lines, spatial frequency of patterns.</li>
+                <li><strong>3. PARAM B (Bottom Right Slider) - VARIATION:</strong> Manages appearance.
+                    <br><em>Examples:</em> Hue shift, Saturation, Added noise, Chaos. <strong>Important Note:</strong> This slider no longer lowers the general brightness; it modifies the texture of the effect.</li>
+            </ul>
+
+            <div class="tip">
+                <strong>Color Override Function:</strong> At the top of the FX tabs, you will see your 5 memory colors. If you click them to activate (green outline), the current effect (e.g., Fire) will abandon its natural colors to use YOUR selected colors. Activate multiple colors to create custom multi-color cycles.
+            </div>
+
+            <h2>5. MATRIX Tab (Pixel Mapping)</h2>
+            <p>This tab is crucial for realism. It allows simulating the resolution of real LED panels, avoiding the "too digital" look of a computer screen.</p>
+            <ul>
+                <li><strong>Presets:</strong> Choose a standard configuration (e.g., Titan 8x16 pixels). The image will be pixelated to match this grid.</li>
+                <li><strong>OFF (HD):</strong> The first button disables the matrix to use your screen's native resolution (smooth and sharp image).</li>
+                <li><strong>Modifiers:</strong>
+                    <ul>
+                        <li><strong>Multiplier:</strong> Divides the virtual grid to increase resolution while keeping the ratio.</li>
+                        <li><strong>Warp:</strong> Applies a liquid distortion to the image.</li>
+                        <li><strong>Noise:</strong> Adds digital grain to break uniformity.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h2>6. TEXT Tab</h2>
+            <p>Turn your screen into a luminous sign or teleprompter.</p>
+            <ul>
+                <li>Enter your text in the dedicated field.</li>
+                <li>Click the <span class="tag">TEXT: OFF</span> button to switch it to <span class="tag">ON</span>.</li>
+                <li><strong>Speed:</strong> Sets the scrolling speed (0 = static centered text).</li>
+                <li><strong>Effects:</strong> Add style (Neon glow, Digital Glitch, Mirror effect for reflection, etc.).</li>
+                <li><strong>Intensity:</strong> This slider doses the strength of the chosen effect (e.g., amount of glitch).</li>
+            </ul>
+        </div>
+
+        <div id="ES" class="content-block">
+            <h1>Manual Completo V7.77</h1>
+            <p>Bienvenido al manual extendido de Shnopia Light Engine (SLE). Esta herramienta transforma su pantalla (ordenador, tableta, teléfono) en un panel de iluminación LED profesional e interactivo. Está diseñado para directores de fotografía, videógrafos y creadores de contenido que necesitan una fuente de luz controlable, dinámica y precisa sin hardware adicional.</p>
+
+            <h2>1. Primeros Pasos e Interfaz</h2>
+            <p>La interfaz está dividida en tres zonas principales para una máxima accesibilidad, incluso en la oscuridad de un set de rodaje.</p>
+            <ul>
+                <li><strong>El Encabezado (Arriba):</strong> Permite cambiar el idioma, ver una vista previa en tiempo real de la salida de luz (Preview) y ocultar la interfaz completa a través del botón <span class="tag">HIDE ME</span> para dejar solo la luz visible.</li>
+                <li><strong>La Zona Central (Pestañas):</strong> Aquí es donde elige el modo de funcionamiento (Color, Blanco, Efectos, etc.). Cada pestaña corresponde a un uso específico.</li>
+                <li><strong>El Pie de Página (Abajo):</strong> Contiene los controles globales que afectan a todo el sistema.
+                    <ul>
+                        <li><strong>Master Dimmer:</strong> Ajusta la intensidad luminosa global del 0% al 100%.</li>
+                        <li><strong>Blackout:</strong> Corta instantáneamente toda la luz (negro total) mientras esté activado.</li>
+                        <li><strong>Pantalla Completa:</strong> Fuerza la aplicación a pantalla completa para eliminar las barras de menú del navegador.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h2>2. Pestaña LIVE (Rendimiento y Memoria)</h2>
+            <p>La pestaña Live es su panel de control de rendimiento. Permite memorizar estados complejos (un color preciso, un efecto con sus ajustes de velocidad, una matriz específica) y recuperarlos instantáneamente.</p>
+            
+            <h3>¿Cómo guardar una escena?</h3>
+            <p>1. Ajuste su luz como desee en las otras pestañas (ej: un efecto Fuego con un tinte específico).<br>
+            2. Vuelva a la pestaña <strong>LIVE</strong>.<br>
+            3. Haga clic en el botón <span class="tag">SAVE</span> situado debajo de uno de los 16 pads.<br>
+            4. El botón parpadea en <strong>ROJO</strong>. Durante este tiempo (aprox. 2 segundos), el sistema guarda todos los parámetros Y captura un video corto de su efecto.<br>
+            5. Una vez terminado, el pad muestra el video en bucle de su efecto.</p>
+
+            <h3>¿Cómo recuperar una escena?</h3>
+            <p>Simplemente haga clic en la imagen del pad. Todos los parámetros (Velocidad, Color, Efecto, Matrix) se restauran inmediatamente al estado exacto de la grabación.</p>
+
+            <h2>3. Gestión del Color</h2>
+            <p>El SLE ofrece dos métodos distintos para gestionar el color, según sus necesidades artísticas.</p>
+
+            <h3>Pestaña COLOR (Modo HSI/RGB)</h3>
+            <p>Ideal para colores saturados y artísticos.</p>
+            <ul>
+                <li><strong>Rueda Cromática:</strong> Mueva el cursor para elegir el tono y la saturación intuitivamente.</li>
+                <li><strong>Sliders RGB:</strong> Para un ajuste matemático preciso (0-255). Puede hacer clic en los números verdes a la derecha de los sliders para introducir un valor preciso con el teclado.</li>
+                <li><strong>Memorias Rápidas:</strong> En la parte inferior, 5 ranuras de memoria de color. Haga clic en la casilla de color para aplicar, o en el botón "SAVE" debajo para almacenar el color actual.</li>
+            </ul>
+
+            <h3>Pestaña WHITE (Modo CCT)</h3>
+            <p>Diseñado para reproducir luz blanca de alta calidad.</p>
+            <ul>
+                <li><strong>Kelvin (Temperatura):</strong> De 1750K (muy cálido, vela) a 10000K (muy frío, cielo azul).</li>
+                <li><strong>Tint (Tinte):</strong> Permite corregir la desviación Verde/Magenta, indispensable para igualar con otras fuentes LED o neones.</li>
+                <li><strong>Presets:</strong> Botones de acceso rápido a los estándares de cine (3200K Tungsteno, 5600K Luz día, etc.).</li>
+            </ul>
+
+            <h2>4. Motor de Efectos (FX)</h2>
+            <p>El motor de efectos V7.77 es procedimental: genera los efectos matemáticamente en tiempo real, lo que permite una modificación fluida sin cortes. Los preajustes automáticos ahora ajustan la estructura y la variación para cada efecto seleccionado.</p>
+
+            <h3>Los Controles Paramétricos</h3>
+            <p>Cada efecto (en Cinema FX o Shnopia FX) es controlado por 3 cursores:</p>
+            <ul>
+                <li><strong>1. VELOCIDAD (Slider superior):</strong> Gestiona el tiempo. Cuanto más alto, más rápida es la animación.</li>
+                <li><strong>2. PARAM A (Slider Inferior Izq) - ESTRUCTURA:</strong> Gestiona el espacio y la forma.
+                    <br><em>Ejemplos:</em> Zoom en el fuego, densidad de los flashes paparazzi, grosor de las líneas de escáner, frecuencia espacial de los patrones.</li>
+                <li><strong>3. PARAM B (Slider Inferior Der) - VARIACIÓN:</strong> Gestiona la apariencia.
+                    <br><em>Ejemplos:</em> Cambio de tono (Hue shift), Saturation, Añadido de ruido, Caos. <strong>Nota importante:</strong> Este slider ya no baja el brillo general, modifica la textura del efecto.</li>
+            </ul>
+
+            <div class="tip">
+                <strong>Función Color Override:</strong> En la parte superior de las pestañas FX, verá sus 5 memorias de color. Si hace clic en ellas para activarlas (marco verde), el efecto actual (ej: Fuego) abandonará sus colores naturales para usar SUS colores seleccionados. Active varios colores para crear ciclos multicolores personalizados.
+            </div>
+
+            <h2>5. Pestaña MATRIX (Mapeo de Píxeles)</h2>
+            <p>Esta pestaña es crucial para el realismo. Permite simular la resolución de paneles LED reales, evitando así el aspecto "demasiado digital" de una pantalla de ordenador.</p>
+            <ul>
+                <li><strong>Presets:</strong> Elija una configuración estándar (ej: Titan 8x16 píxeles). La imagen se pixelará para corresponder a esta rejilla.</li>
+                <li><strong>OFF (HD):</strong> El primer botón desactiva la matriz para usar la resolución nativa de su pantalla (imagen suave y nítida).</li>
+                <li><strong>Modificadores:</strong>
+                    <ul>
+                        <li><strong>Multiplier:</strong> Divide la rejilla virtual para aumentar la resolución manteniendo la proporción.</li>
+                        <li><strong>Warp:</strong> Aplica una deformación líquida a la imagen.</li>
+                        <li><strong>Noise:</strong> Añade grano digital para romper la uniformidad.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h2>6. Pestaña TEXT (Texto)</h2>
+            <p>Transforme su pantalla en letrero luminoso o teleprompter.</p>
+            <ul>
+                <li>Escriba su texto en el campo dedicado.</li>
+                <li>Haga clic en el botón <span class="tag">TEXTO: OFF</span> para pasarlo a <span class="tag">ON</span>.</li>
+                <li><strong>Velocidad:</strong> Ajusta la velocidad de desplazamiento (0 = texto fijo centrado).</li>
+                <li><strong>Efectos:</strong> Añada estilo (Brillo Neón, Glitch digital, Efecto espejo para reflexión, etc.).</li>
+                <li><strong>Intensidad:</strong> Este slider dosifica la fuerza del efecto elegido (ej: cantidad de glitch).</li>
+            </ul>
+        </div>
+
+        <div id="RU" class="content-block">
+            <h1>Полное руководство V7.77</h1>
+            <p>Добро пожаловать в расширенное руководство пользователя Shnopia Light Engine (SLE). Этот инструмент превращает любой экран (компьютер, планшет, телефон) в профессиональную и интерактивную светодиодную панель. Он создан для операторов-постановщиков, видеографов и создателей контента, которым нужен управляемый, динамичный и точный источник света без дополнительного оборудования.</p>
+
+            <h2>1. Начало работы и Интерфейс</h2>
+            <p>Интерфейс разделен на три основные зоны для максимальной доступности, даже в темноте съемочной площадки.</p>
+            <ul>
+                <li><strong>Верхняя панель (Header):</strong> Позволяет сменить язык, увидеть предпросмотр светового потока в реальном времени (Preview) и скрыть интерфейс кнопкой <span class="tag">HIDE ME</span>, оставив только свет.</li>
+                <li><strong>Центральная зона (Вкладки):</strong> Здесь вы выбираете режим работы (Цвет, Белый, Эффекты и т.д.). Каждая вкладка соответствует конкретной задаче.</li>
+                <li><strong>Нижняя панель (Footer):</strong> Содержит глобальные элементы управления, влияющие на всю систему.
+                    <ul>
+                        <li><strong>Master Dimmer:</strong> Регулирует общую яркость от 0% до 100%.</li>
+                        <li><strong>Blackout:</strong> Мгновенно выключает весь свет (полная темнота), пока активирован.</li>
+                        <li><strong>Full Screen:</strong> Переводит приложение в полноэкранный режим, убирая меню браузера.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h2>2. Вкладка LIVE (Производительность и Память)</h2>
+            <p>Вкладка Live — это ваша панель управления производительностью. Она позволяет запоминать сложные состояния (точный цвет, эффект с настройками скорости, конкретная матрица) и мгновенно их вызывать.</p>
+            
+            <h3>Как сохранить сцену?</h3>
+            <p>1. Настройте свет по желанию в других вкладках (например, эффект Огня с определенным оттенком).<br>
+            2. Вернитесь на вкладку <strong>LIVE</strong>.<br>
+            3. Нажмите кнопку <span class="tag">SAVE</span> под одним из 16 пэдов.<br>
+            4. Кнопка замигает <strong>КРАСНЫМ</strong>. В это время (около 2 секунд) система сохраняет все параметры И записывает короткое видео вашего эффекта.<br>
+            5. По завершении пэд отобразит зацикленное видео вашего эффекта.</p>
+
+            <h3>Как вызвать сцену?</h3>
+            <p>Просто нажмите на изображение пэда. Все параметры (Скорость, Цвет, Эффект, Матрица) немедленно восстанавливаются в том состоянии, в котором они были записаны.</p>
+
+            <h2>3. Управление Цветом</h2>
+            <p>SLE предлагает два различных метода управления цветом, в зависимости от ваших художественных задач.</p>
+
+            <h3>Вкладка COLOR (Режим HSI/RGB)</h3>
+            <p>Идеально для насыщенных и художественных цветов.</p>
+            <ul>
+                <li><strong>Цветовое колесо:</strong> Перемещайте курсор для интуитивного выбора оттенка и насыщенности.</li>
+                <li><strong>RGB Слайдеры:</strong> Для точной математической настройки (0-255). Вы можете нажать на зеленые цифры справа от слайдеров, чтобы ввести точное значение с клавиатуры.</li>
+                <li><strong>Быстрая Память:</strong> Внизу страницы 5 слотов памяти цвета. Нажмите на цветной квадрат, чтобы применить, или на кнопку "SAVE" под ним, чтобы сохранить текущий цвет.</li>
+            </ul>
+
+            <h3>Вкладка WHITE (Режим CCT)</h3>
+            <p>Разработана для воспроизведения высококачественного белого света.</p>
+            <ul>
+                <li><strong>Кельвины (Температура):</strong> От 1750K (очень теплый, свеча) до 10000K (очень холодный, голубое небо).</li>
+                <li><strong>Тинт (Оттенок):</strong> Позволяет корректировать сдвиг Зеленый/Маджента, что необходимо для согласования с другими LED источниками или неоном.</li>
+                <li><strong>Пресеты:</strong> Кнопки быстрого доступа к стандартам кино (3200K Вольфрам, 5600K Дневной свет и т.д.).</li>
+            </ul>
+
+            <h2>4. Движок Эффектов (FX)</h2>
+            <p>Движок эффектов V7.77 является процедурным: он генерирует эффекты математически в реальном времени, что позволяет плавно менять настройки без прерываний. Автоматические пресеты теперь настраивают структуру и вариацию для каждого выбранного эффекта.</p>
+
+            <h3>Параметрическое Управление</h3>
+            <p>Каждый эффект (в Cinema FX или Shnopia FX) управляется 3 ползунками:</p>
+            <ul>
+                <li><strong>1. СКОРОСТЬ (Верхний слайдер):</strong> Управляет временем. Чем выше, тем быстрее анимация.</li>
+                <li><strong>2. ПАРАМЕТР А (Нижний Левый) - СТРУКТУРА:</strong> Управляет пространством и формой.
+                    <br><em>Примеры:</em> Зум в огне, плотность вспышек папарацци, толщина линий сканера, пространственная частота узоров.</li>
+                <li><strong>3. ПАРАМЕТР Б (Нижний Правый) - ВАРИАЦИЯ:</strong> Управляет внешним видом.
+                    <br><em>Примеры:</em> Сдвиг оттенка (Hue shift), Насыщенность, Добавление шума, Хаос. <strong>Важно:</strong> Этот слайдер больше не снижает общую яркость, он меняет текстуру эффекта.</li>
+            </ul>
+
+            <div class="tip">
+                <strong>Функция Color Override:</strong> В верхней части вкладок FX вы увидите ваши 5 ячеек памяти цвета. Если нажать на них для активации (зеленая рамка), текущий эффект (например, Огонь) откажется от своих естественных цветов и будет использовать ВАШИ выбранные цвета. Активируйте несколько цветов для создания пользовательских многоцветных циклов.
+            </div>
+
+            <h2>5. Вкладка MATRIX (Пиксельное Маппинг)</h2>
+            <p>Эта вкладка критически важна для реализма. Она позволяет симулировать разрешение реальных LED панелей, избегая "слишком цифрового" вида компьютерного экрана.</p>
+            <ul>
+                <li><strong>Пресеты:</strong> Выберите стандартную конфигурацию (например, Titan 8x16 пикселей). Изображение будет пикселизировано в соответствии с этой сеткой.</li>
+                <li><strong>OFF (HD):</strong> Первая кнопка отключает матрицу для использования родного разрешения вашего экрана (гладкое и четкое изображение).</li>
+                <li><strong>Модификаторы:</strong>
+                    <ul>
+                        <li><strong>Multiplier:</strong> Делит виртуальную сетку, увеличивая разрешение при сохранении соотношения сторон.</li>
+                        <li><strong>Warp:</strong> Применяет жидкую деформацию к изображению.</li>
+                        <li><strong>Noise:</strong> Добавляет цифровое зерно, чтобы разбить однородность.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h2>6. Вкладка TEXT (Текст)</h2>
+            <p>Превратите ваш экран в светящуюся вывеску или телесуфлер.</p>
+            <ul>
+                <li>Введите ваш текст в специальное поле.</li>
+                <li>Нажмите кнопку <span class="tag">ТЕКСТ: ВЫКЛ</span>, чтобы переключить на <span class="tag">ВКЛ</span>.</li>
+                <li><strong>Скорость:</strong> Регулирует скорость прокрутки (0 = статический текст по центру).</li>
+                <li><strong>Эффекты:</strong> Добавьте стиль (Неоновое свечение, Цифровой Глитч, Зеркальный эффект для отражений и т.д.).</li>
+                <li><strong>Интенсивность:</strong> Этот слайдер дозирует силу выбранного эффекта (например, количество глитча).</li>
+            </ul>
+        </div>
+
+        <div id="JP" class="content-block">
+            <h1>完全マニュアル V7.77</h1>
+            <p>Shnopia Light Engine (SLE) の拡張マニュアルへようこそ。このツールは、あらゆる画面（PC、タブレット、スマートフォン）をプロフェッショナルでインタラクティブなLED照明パネルに変えます。撮影監督、ビデオグラファー、コンテンツクリエイターのために設計されており、追加のハードウェアなしで制御可能でダイナミックな光源を提供します。</p>
+
+            <h2>1. はじめに & インターフェース</h2>
+            <p>インターフェースは、暗い撮影現場でも最大限のアクセシビリティを確保するために3つの主要ゾーンに分かれています。</p>
+            <ul>
+                <li><strong>ヘッダー (上部):</strong> 言語の変更、光出力のリアルタイムプレビュー (Preview)、そして <span class="tag">HIDE ME</span> ボタンでインターフェースを隠し、光だけを表示することができます。</li>
+                <li><strong>中央ゾーン (タブ):</strong> ここで動作モード（カラー、ホワイト、エフェクトなど）を選択します。各タブは特定の用途に対応しています。</li>
+                <li><strong>フッター (下部):</strong> システム全体に影響するグローバルコントロールが含まれています。
+                    <ul>
+                        <li><strong>Master Dimmer:</strong> 全体の明るさを0%から100%まで調整します。</li>
+                        <li><strong>Blackout:</strong> 有効な間、すべての光を瞬時に遮断（完全な黒）します。</li>
+                        <li><strong>Full Screen:</strong> アプリケーションを全画面表示にし、ブラウザのメニューバーを排除します。</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h2>2. LIVE タブ (パフォーマンス & メモリ)</h2>
+            <p>Liveタブはパフォーマンスのダッシュボードです。複雑な状態（正確な色、速度設定付きのエフェクト、特定の行列）を記憶し、瞬時に呼び出すことができます。</p>
+            
+            <h3>シーンの保存方法は？</h3>
+            <p>1. 他のタブで光を好みに設定します（例：特定の色合いの炎エフェクト）。<br>
+            2. <strong>LIVE</strong> タブに戻ります。<br>
+            3. 16個のパッドの下にある <span class="tag">SAVE</span> ボタンをクリックします。<br>
+            4. ボタンが<strong>赤く</strong>点滅します。この間（約2秒）、システムはすべてのパラメータを記録し、エフェクトの短いビデオをキャプチャします。<br>
+            5. 完了すると、パッドにエフェクトのループビデオが表示されます。</p>
+
+            <h3>シーンの呼び出し方法は？</h3>
+            <p>パッドの画像をクリックするだけです。すべてのパラメータ（速度、色、エフェクト、マトリックス）が、保存時の正確な状態に即座に復元されます。</p>
+
+            <h2>3. カラー管理</h2>
+            <p>SLEは、芸術的なニーズに応じて2つの異なる色管理方法を提供します。</p>
+
+            <h3>COLOR タブ (HSI/RGB モード)</h3>
+            <p>彩度の高い芸術的な色に最適です。</p>
+            <ul>
+                <li><strong>カラーホイール:</strong> カーソルを動かして、色相と彩度を直感的に選択します。</li>
+                <li><strong>RGB スライダー:</strong> 正確な数学的調整用 (0-255). スライダーの右側にある緑色の数字をクリックして、キーボードで正確な値を入力できます。</li>
+                <li><strong>クイックメモリ:</strong> ページ下部に5つのカラーメモリスロットがあります。色の付いたボックスをクリックして適用するか、その下の「SAVE」ボタンをクリックして現在の色を保存します。</li>
+            </ul>
+
+            <h3>WHITE タブ (CCT モード)</h3>
+            <p>高品質な白色光を再現するために設計されています。</p>
+            <ul>
+                <li><strong>Kelvin (色温度):</strong> 1750K（非常に暖かい、ろうそく）から10000K（非常に冷たい、青空）まで。</li>
+                <li><strong>Tint (色合い):</strong> 緑/マゼンタの偏差を補正できます。他のLED光源やネオンと一致させるために不可欠です。</li>
+                <li><strong>Presets:</strong> 映画業界標準（3200K タングステン、5600K デイライトなど）へのクイックアクセスボタン。</li>
+            </ul>
+
+            <h2>4. エフェクトエンジン (FX)</h2>
+            <p>V7.77のエフェクトエンジンはプロシージャルです。リアルタイムで数学的にエフェクトを生成するため、途切れることなくスムーズな変更が可能です。自動プリセットが、選択された各エフェクトの構造とバリエーションを調整します。</p>
+
+            <h3>パラメトリックコントロール</h3>
+            <p>各エフェクト（Cinema FX または Shnopia FX）は3つのスライダーで制御されます：</p>
+            <ul>
+                <li><strong>1. 速度 (上部スライダー):</strong> 時間を管理します。高いほどアニメーションが速くなります。</li>
+                <li><strong>2. パラメータ A (左下スライダー) - 構造 (STRUCTURE):</strong> 空間と形状を管理します。
+                    <br><em>例：</em> 炎のズーム、パパラッチフラッシュの密度、スキャナーラインの太さ、パターンの空間周波数。</li>
+                <li><strong>3. パラメータ B (右下スライダー) - バリエーション (VARIATION):</strong> 外観を管理します。
+                    <br><em>例：</em> 色相シフト、彩度、ノイズの追加、カオス。<strong>重要：</strong> このスライダーは全体の明るさを下げることはなく、エフェクトの質感を変更します。</li>
+            </ul>
+
+            <div class="tip">
+                <strong>Color Override (色上書き) 機能：</strong> FXタブの上部に、5つのメモリカラーが表示されます。クリックして有効にする（緑の枠線）と、現在のアクティブなエフェクト（例：炎）は自然な色を捨て、あなたが選択した色を使用します。複数の色を有効にして、カスタムのマルチカラーサイクルを作成できます。
+            </div>
+
+            <h2>5. MATRIX タブ (ピクセルマッピング)</h2>
+            <p>このタブはリアリズムにとって重要です。実際のLEDパネルの解像度をシミュレートし、コンピュータ画面の「デジタルすぎる」外観を回避します。</p>
+            <ul>
+                <li><strong>Presets (プリセット):</strong> 標準構成を選択します（例：Titan 8x16ピクセル）。画像はこのグリッドに合わせてピクセル化されます。</li>
+                <li><strong>OFF (HD):</strong> 最初のボタンはマトリックスを無効にし、画面のネイティブ解像度を使用します（滑らかで鮮明な画像）。</li>
+                <li><strong>モディファイア:</strong>
+                    <ul>
+                        <li><strong>Multiplier:</strong> 仮想グリッドを分割し、比率を保ちながら解像度を上げます。</li>
+                        <li><strong>Warp:</strong> 画像に液状の歪みを適用します。</li>
+                        <li><strong>Noise:</strong> デジタルグレインを追加して均一性を崩します。</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h2>6. TEXT タブ (テキスト)</h2>
+            <p>画面を光る看板やテレプロンプターに変えます。</p>
+            <ul>
+                <li>専用フィールドにテキストを入力します。</li>
+                <li><span class="tag">TEXT: OFF</span> ボタンをクリックして <span class="tag">ON</span> に切り替えます。</li>
+                <li><strong>速度:</strong> スクロール速度を調整します（0 = 中央に固定されたテキスト）。</li>
+                <li><strong>エフェクト:</strong> スタイルを追加します（ネオングロー、デジタルグリッチ、反射用ミラー効果など）。</li>
+                <li><strong>強度:</strong> 選択したエフェクトの強さを調整します（例：グリッチの量）。</li>
+            </ul>
+        </div>
+
+        <div id="PL" class="content-block">
+            <h1>Pełna Instrukcja V7.77</h1>
+            <p>Witamy w rozszerzonej instrukcji obsługi Shnopia Light Engine (SLE). To narzędzie zmienia każdy ekran (komputer, tablet, phone) w profesjonalny, interaktywny panel oświetleniowy LED. Zaprojektowany dla operatorów filmowych, wideofilmowców i twórców treści, którzy potrzebują kontrolowanego, dynamicznego i precyzyjnego źródła światła bez dodatkowego sprzętu.</p>
+
+            <h2>1. Pierwsze Kroki i Interfejs</h2>
+            <p>Interfejs jest podzielony na trzy główne strefy dla maksymalnej dostępności, nawet w ciemności planu filmowego.</p>
+            <ul>
+                <li><strong>Nagłówek (Góra):</strong> Pozwala zmienić język, zobaczyć podgląd wyjścia świetlnego w czasie rzeczywistym (Preview) i ukryć cały interfejs za pomocą przycisku <span class="tag">HIDE ME</span>, aby pozostawić tylko widoczne światło.</li>
+                <li><strong>Strefa Centralna (Zakładki):</strong> Tutaj wybierasz tryb pracy (Kolor, Biały, Efekty itp.). Każda zakładka odpowiada konkretnemu zastosowaniu.</li>
+                <li><strong>Stopka (Dół):</strong> Zawiera globalne sterowanie wpływające na cały system.
+                    <ul>
+                        <li><strong>Master Dimmer:</strong> Reguluje ogólną intensywność światła od 0% do 100%.</li>
+                        <li><strong>Blackout:</strong> Natychmiast odcina wszelkie światło (całkowita czerń), dopóki jest aktywny.</li>
+                        <li><strong>Full Screen:</strong> Wymusza tryb pełnoekranowy aplikacji, aby usunąć paski menu przeglądarki.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h2>2. Zakładka LIVE (Wydajność i Pamięć)</h2>
+            <p>Zakładka Live to Twój pulpit wydajności. Pozwala zapamiętywać złożone stany (precyzyjny kolor, efekt z ustawieniami prędkości, konkretną matrycę) i przywoływać je natychmiastowo.</p>
+            
+            <h3>Jak zapisać scenę?</h3>
+            <p>1. Ustaw światło tak, jak chcesz w innych zakładkach (np. efekt Ognia z konkretnym odcieniem).<br>
+            2. Wróć do zakładki <strong>LIVE</strong>.<br>
+            3. Kliknij przycisk <span class="tag">SAVE</span> znajdujący się pod jednym z 16 padów.<br>
+            4. Przycisk miga na <strong>CZERWONO</strong>. W tym czasie (około 2 sekundy) system zapisuje wszystkie parametry ORAZ nagrywa krótki film Twojego efektu.<br>
+            5. Po zakończeniu pad wyświetla zapętlone wideo Twojego efektu.</p>
+
+            <h3>Jak przywołać scenę?</h3>
+            <p>Po prostu kliknij obraz padu. Wszystkie parametry (Prędkość, Kolor, Efekt, Matrix) są natychmiast przywracane do dokładnego stanu nagrania.</p>
+
+            <h2>3. Zarządzanie Kolorem</h2>
+            <p>SLE oferuje dwie różne metody zarządzania kolorem, w zależności od Twoich potrzeb artystycznych.</p>
+
+            <h3>Zakładka COLOR (Tryb HSI/RGB)</h3>
+            <p>Idealna dla nasyconych i artystycznych kolorów.</p>
+            <ul>
+                <li><strong>Koło Chromatyczne:</strong> Przesuwaj kursor, aby intuicyjnie wybrać odcień i nasycenie.</li>
+                <li><strong>Suwaki RGB:</strong> Do precyzyjnej regulacji matematycznej (0-255). Możesz kliknąć zielone cyfry po prawej stronie suwaków, aby wprowadzić dokładną wartość z klawiatury.</li>
+                <li><strong>Szybkie Pamięci:</strong> Na dole strony 5 slotów pamięci koloru. Kliknij kolorowe pole, aby zastosować, lub przycisk "SAVE" poniżej, aby zapisać bieżący kolor.</li>
+            </ul>
+
+            <h3>Zakładka WHITE (Tryb CCT)</h3>
+            <p>Zaprojektowana do odtwarzania wysokiej jakości białego światła.</p>
+            <ul>
+                <li><strong>Kelvin (Temperatura):</strong> Od 1750K (bardzo ciepłe, świeca) do 10000K (bardzo zimne, błękitne niebo).</li>
+                <li><strong>Tint (Zafarb):</strong> Pozwala skorygować przesunięcie Zielony/Magenta, niezbędne do dopasowania do innych źródeł LED lub neonów.</li>
+                <li><strong>Presety:</strong> Przyciski szybkiego dostępu do standardów kinowych (3200K Wolfram, 5600K Światło dzienne itp.).</li>
+            </ul>
+
+            <h2>4. Silnik Efektów (FX)</h2>
+            <p>Silnik efektów V7.77 jest proceduralny: generuje efekty matematycznie w czasie rzeczywistym, co pozwala na płynną modyfikację bez zacięć. Automatyczne presety dostosowują teraz strukturę i wariację dla każdego wybranego efektu.</p>
+
+            <h3>Sterowanie Parametryczne</h3>
+            <p>Każdy efekt (w Cinema FX lub Shnopia FX) jest sterowany przez 3 suwaki:</p>
+            <ul>
+                <li><strong>1. PRĘDKOŚĆ (Górny suwak):</strong> Zarządza czasem. Im wyżej, tym szybsza animacja.</li>
+                <li><strong>2. PARAM A (Dolny Lewy Suwak) - STRUKTURA:</strong> Zarządza przestrzenią i kształtem.
+                    <br><em>Przykłady:</em> Zoom w ogniu, gęstość błysków paparazzi, grubość linii skanera, częstotliwość przestrzenna wzorów.</li>
+                <li><strong>3. PARAM B (Dolny Prawy Suwak) - WARIACJA:</strong> Zarządza wyglądem.
+                    <br><em>Przykłady:</em> Przesunięcie barwy (Hue shift), Nasycenie, Dodanie szumu, Chaos. <strong>Ważna uwaga:</strong> Ten suwak nie zmniejsza już ogólnej jasności, modyfikuje teksturę efektu.</li>
+            </ul>
+
+            <div class="tip">
+                <strong>Funkcja Color Override:</strong> Na górze zakładek FX zobaczysz swoje 5 pamięci kolorów. Jeśli klikniesz je, aby aktywować (zielona ramka), bieżący efekt (np. Ogień) porzuci swoje naturalne kolory, aby użyć TWOICH wybranych kolorów. Aktywuj wiele kolorów, aby stworzyć niestandardowe cykle wielokolorowe.
+            </div>
+
+            <h2>5. Zakładka MATRIX (Mapowanie Pikseli)</h2>
+            <p>Ta zakładka jest kluczowa dla realizmu. Pozwala symulować rozdzielczość prawdziwych paneli LED, unikając w ten sposób "zbyt cyfrowego" wyglądu ekranu komputera.</p>
+            <ul>
+                <li><strong>Presets:</strong> Wybierz standardową konfigurację (np. Titan 8x16 pikseli). Obraz zostanie spikselizowany, aby pasował do tej siatki.</li>
+                <li><strong>OFF (HD):</strong> Pierwszy przycisk wyłącza matrycę, aby użyć natywnej rozdzielczości ekranu (obraz gładki i ostry).</li>
+                <li><strong>Modyfikatory:</strong>
+                    <ul>
+                        <li><strong>Multiplier:</strong> Dzieli wirtualną siatkę, aby zwiększyć rozdzielczość zachowując proporcje.</li>
+                        <li><strong>Warp:</strong> Nakłada płynne zniekształcenie na obraz.</li>
+                        <li><strong>Noise:</strong> Dodaje cyfrowe ziarno, aby przełamać jednolitość.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h2>6. Zakładka TEXT (Tekst)</h2>
+            <p>Zmień swój ekran w świecący szyld lub teleprompter.</p>
+            <ul>
+                <li>Wpisz swój tekst w dedykowanym polu.</li>
+                <li>Kliknij przycisk <span class="tag">TEKST: WYŁ</span>, aby przełączyć go na <span class="tag">WŁ</span>.</li>
+                <li><strong>Prędkość:</strong> Reguluje prędkość przewijania (0 = tekst stały wyśrodkowany).</li>
+                <li><strong>Efekty:</strong> Dodaj styl (Neonowa poświata, Cyfrowy Glitch, Efekt lustra do odbić itp.).</li>
+                <li><strong>Intensywność:</strong> Ten suwak dozuje siłę wybranego efektu (np. ilość glitcha).</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            Shnopia Light Engine V7.77 - Documentation<br>
+            Developed by Rossignol Grip Vibe Coding
+        </div>
+    </div>
+
+    <script>
+        // Button translations (Main Launch)
+        const btnTexts = {
+            FR: "Lancer l'interface maintenant",
+            EN: "LAUNCH INTERFACE NOW",
+            ES: "INICIAR INTERFAZ AHORA",
+            RU: "ЗАПУСТИТЬ ИНТЕРФЕЙС",
+            JP: "インターフェースを起動",
+            PL: "URUCHOM INTERFEJS TERAZ"
+        };
+
+        // Button translations (Download)
+        const dlBtnTexts = {
+            FR: "📥 Télécharger App Offline",
+            EN: "📥 Download Offline App",
+            ES: "📥 Descargar App Offline",
+            RU: "📥 Скачать приложение",
+            JP: "📥 アプリをダウンロード",
+            PL: "📥 Pobierz aplikację"
+        };
+
+        function setLang(langId, btn) {
+            // 1. Masquer tous les contenus
+            const contents = document.querySelectorAll('.content-block');
+            contents.forEach(el => el.classList.remove('visible'));
+
+            // 2. Afficher le contenu cible
+            const target = document.getElementById(langId);
+            if(target) target.classList.add('visible');
+
+            // 3. Mettre à jour le style des boutons de langue
+            const btns = document.querySelectorAll('.lang-link');
+            btns.forEach(b => b.classList.remove('active'));
+            if(btn) btn.classList.add('active');
+
+            // 4. Mettre à jour le texte du bouton launch
+            const launchBtn = document.getElementById('launch-btn-text');
+            if(launchBtn && btnTexts[langId]) {
+                launchBtn.innerText = btnTexts[langId];
+            }
+
+            // 5. Mettre à jour le texte du bouton download
+            const dlBtn = document.getElementById('dl-btn-text');
+            if(dlBtn && dlBtnTexts[langId]) {
+                dlBtn.innerText = dlBtnTexts[langId];
+            }
+        }
+    </script>
+
+</body>
+</html>
