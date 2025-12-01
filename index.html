@@ -93,9 +93,14 @@
             .startup-title { font-size: 20px; }
             .startup-text { font-size: 12px; }
             .intro-lang-bar { margin-top: 20px; }
-            /* AJOUT POUR REDUIRE LA TAILLE DE LA ROUE SUR MOBILE */
-            .wheel-wrapper { min-height: 120px; }
-            .wheel-container { width: min(180px, 28vh); height: min(180px, 28vh); }
+            
+            /* FORÇAGE TAILLE RÉDUITE ROUE MOBILE */
+            .wheel-wrapper { min-height: 100px !important; }
+            .wheel-container { 
+                width: min(150px, 25vh) !important; 
+                height: min(150px, 25vh) !important; 
+            }
+        }
         }
 
         /* --- SCROLLBAR --- */
