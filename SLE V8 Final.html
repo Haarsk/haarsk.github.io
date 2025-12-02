@@ -358,48 +358,74 @@
         .action-box.flash { background: var(--lcd-on) !important; box-shadow: 0 0 60px var(--lcd-on) !important; border-color: #fff !important; }
         .action-box.flash span { color: #000 !important; text-shadow: none !important; }
         
-        /* Styles Génériques Titres */
+        /* Styles Génériques Titres V9.8 (HALO NÉON INTENSE PARTOUT) */
         .box-title { 
-            font-family: 'Orbitron'; font-weight: 900; font-size: 20px; 
-            color: var(--lcd-on); text-align: center; margin-bottom: 5px; pointer-events: none; 
-            text-shadow: 0 0 8px rgba(51,255,51,0.6); width: 100%; line-height: 1.1; text-transform: uppercase;
-        }
-        .box-sub { 
-            font-family: 'Roboto Mono'; font-size: 12px; color: #00cc00; font-weight: bold;
-            text-align: center; pointer-events: none; letter-spacing: 0.5px; line-height: 1.4; width: 100%;
-        }
-
-        /* --- SPECIFIC: ROSSIGNOL BRANDING V9.3 --- */
-        .rossignol-header {
-            display: flex; align-items: center; justify-content: center; gap: 15px;
-            margin-bottom: 8px; width: 100%;
-        }
-        
-        .rossignol-text {
             font-family: 'Orbitron'; 
             font-weight: 900; 
-            font-size: 24px; 
-            color: #00ff00; /* Vert pur comme sur l'image */
-            /* Effet néon intense */
+            font-size: 22px; /* Même taille que la case Rossignol */
+            color: #00ff00; /* Vert Pur */
+            text-align: center; margin-bottom: 5px; pointer-events: none; 
+            
+            /* GROS HALO NÉON (Identique à la 1ère case) */
+            text-shadow: 0 0 5px #00ff00, 0 0 15px #00ff00, 0 0 30px #00ff00;
+            
+            width: 100%; line-height: 1.2; text-transform: uppercase;
+        }
+        
+        .box-sub { 
+            font-family: 'Orbitron'; /* On passe tout en Orbitron pour le look Cyber */
+            font-size: 13px; 
+            color: #00ff00; /* Vert Pur */
+            font-weight: 900;
+            text-align: center; pointer-events: none; letter-spacing: 1px; line-height: 1.4; width: 100%;
+            
+            /* PETIT HALO NÉON pour les sous-titres */
+            text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00;
+            
+            text-transform: uppercase;
+        }
+
+/* --- SPECIFIC: ROSSIGNOL BRANDING V9.6 --- */
+        .rossignol-header {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            margin-bottom: 5px; width: 100%;
+        }
+        
+        /* Titre Principal */
+        .rossignol-title {
+            font-family: 'Orbitron'; 
+            font-weight: 900; 
+            font-size: 22px; 
+            color: #00ff00; 
             text-shadow: 0 0 5px #00ff00, 0 0 15px #00ff00, 0 0 30px #00ff00; 
             text-align: center; 
             white-space: nowrap;
+            line-height: 1.2;
         }
         
         .rossignol-icon { 
-            font-size: 28px; 
-            filter: drop-shadow(0 0 8px #00ff00); /* Halo autour des émojis aussi */
+            font-size: 24px; 
+            filter: drop-shadow(0 0 8px #00ff00); 
         }
         
-        .email-highlight {
-            font-family: 'Roboto Mono'; 
-            font-size: 16px; 
-            color: #4d94ff; /* Bleu clair lisible sur noir (proche de l'image) */
+        /* Sous-titres (Contact & Email) - MÊME STYLE LUMINEUX */
+        .rossignol-neon-sub {
+            font-family: 'Orbitron'; 
+            font-weight: 900; /* Même épaisseur */
+            font-size: 15px; /* Juste un peu plus petit pour que ça rentre */
+            color: #00ff00; 
+            text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00; /* Halo lumineux */
             display: block; 
-            margin-top: 5px; 
-            text-shadow: 0 0 2px #0033cc;
+            margin-top: 4px; 
             letter-spacing: 1px;
-            text-decoration: underline; /* Souligné comme sur l'image */
+            text-decoration: none; /* Pas de soulignement */
+            text-transform: uppercase; /* Tout en majuscule pour le look cyber */
+        }
+        
+        @media (max-width: 600px) {
+            .rossignol-title { font-size: 16px; }
+            .rossignol-neon-sub { font-size: 12px; }
+            .rossignol-icon { font-size: 18px; }
         }
 
         /* --- SPECIFIC: WARNING TEXT (MANUAL) - MODIFIÉ V9.3 --- */
@@ -746,12 +772,15 @@
                     <div class="action-box" onclick="triggerAction(this, 'mail')">
                         <div class="rossignol-header">
                             <span class="rossignol-icon">🐦</span>
-                            <span class="rossignol-text">Rossignol Grip Vibe Coding</span>
+                            <span class="rossignol-title">Rossignol Grip Vibe Coding</span>
                             <span class="rossignol-icon">🗼🇫🇷</span>
                         </div>
-                        <span class="box-sub">
-                            <span data-tr="CONTACT_SUB">Contact & Support:</span>
-                            <span class="email-highlight">ROSSIGNOL.P@GMAIL.COM</span>
+                        
+                        <span class="rossignol-neon-sub" data-tr="CONTACT_SUB">
+                            CONTACT & SUPPORT:
+                        </span>
+                        <span class="rossignol-neon-sub">
+                            ROSSIGNOL.P@GMAIL.COM
                         </span>
                     </div>
 
@@ -1787,7 +1816,9 @@
                 // Ouvre le manuel après un petit délai pour voir le flash
                 setTimeout(() => window.open('manual.html', '_blank'), 300);
             } else if (type === 'mail') {
-                setTimeout(() => window.location.href = "mailto:rossignol.p@gmail.com", 300);
+                // OBJET DU MAIL AUTOMATIQUE
+                const subject = "A propos de Shnopia Light Engine";
+                setTimeout(() => window.location.href = "mailto:rossignol.p@gmail.com?subject=" + encodeURIComponent(subject), 300);
             }
         };
 
