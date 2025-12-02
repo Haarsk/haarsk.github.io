@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Professional Screen Light | SLE V8</title>
+    <title>Professional Screen Light | SLE V8.3</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Orbitron:wght@500;900&family=Anton&family=Bebas+Neue&family=Press+Start+2P&family=Lobster&family=Pacifico&family=Bangers&family=Creepster&family=Monoton&family=Audiowide&family=Black+Ops+One&family=Syncopate&family=VT323&family=Righteous&family=Fredoka+One&family=Luckiest+Guy&family=Russo+One&family=Special+Elite&family=Wallpoet&display=swap" rel="stylesheet">
     <style>
         /* --- CORE --- */
@@ -93,6 +93,14 @@
             .startup-title { font-size: 20px; }
             .startup-text { font-size: 12px; }
             .intro-lang-bar { margin-top: 20px; }
+            
+            /* FORÇAGE TAILLE RÉDUITE ROUE MOBILE */
+            .wheel-wrapper { min-height: 100px !important; }
+            .wheel-container { 
+                width: min(150px, 25vh) !important; 
+                height: min(150px, 25vh) !important; 
+            }
+        }
         }
 
         /* --- SCROLLBAR --- */
@@ -268,7 +276,7 @@
 
         /* --- TEXT --- */
         .text-input-wrapper { background: #fff; padding: 5px; border-radius: 4px; border: 1px solid #000; }
-        #text-content { width: 100%; border: none; outline: none; font-family: 'Roboto Mono', monospace; font-size: 16px; font-weight: bold; color: #000; background: transparent; text-transform: uppercase; }
+        #text-content { width: 100%; border: none; outline: none; font-family: 'Roboto Mono', monospace; font-size: 16px; font-weight: bold; color: #000; background: transparent; }
         .text-toggle-btn { width: 100%; padding: 10px; margin-top:10px; border-radius: 6px; background: #002200; color: #008800; border: 2px solid #004400; font-weight: bold; font-family: 'Orbitron'; font-size: 14px; cursor: pointer; transition: 0.2s; }
         .text-toggle-btn.active { background: #004400; color: #0f0; border-color: #0f0; box-shadow: 0 0 10px rgba(0,255,0,0.5); }
         .dropdown { width: 100%; background: #002200; color: #0f0; border: 1px solid #004400; padding: 5px; font-family: 'Roboto Mono'; font-size: 11px; border-radius: 3px; margin-top: 2px; }
@@ -332,6 +340,106 @@
         
         #cork-icon { display: none !important; }
 
+/* --- ACTION BOXES V9.3 (WARNING BIGGER) --- */
+        .help-container {
+            display: flex; flex-direction: column; height: 100%; gap: 15px; padding-bottom: 5px;
+        }
+        
+        .action-box {
+            flex: 1;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: #001100; border-radius: 8px; border: 2px solid var(--lcd-on);
+            box-shadow: 0 0 15px rgba(51, 255, 51, 0.1); width: 100%; cursor: pointer;
+            text-decoration: none; transition: 0.2s; position: relative; padding: 15px 10px; /* Un peu plus de padding vertical */
+            overflow: hidden;
+        }
+        
+        .action-box:hover { background: #002200; box-shadow: 0 0 30px rgba(51, 255, 51, 0.3); transform: scale(1.02); z-index: 10; }
+        .action-box.flash { background: var(--lcd-on) !important; box-shadow: 0 0 60px var(--lcd-on) !important; border-color: #fff !important; }
+        .action-box.flash span { color: #000 !important; text-shadow: none !important; }
+        
+        /* Styles Génériques Titres */
+        .box-title { 
+            font-family: 'Orbitron'; font-weight: 900; font-size: 20px; 
+            color: var(--lcd-on); text-align: center; margin-bottom: 5px; pointer-events: none; 
+            text-shadow: 0 0 8px rgba(51,255,51,0.6); width: 100%; line-height: 1.1; text-transform: uppercase;
+        }
+        .box-sub { 
+            font-family: 'Roboto Mono'; font-size: 12px; color: #00cc00; font-weight: bold;
+            text-align: center; pointer-events: none; letter-spacing: 0.5px; line-height: 1.4; width: 100%;
+        }
+
+        /* --- SPECIFIC: ROSSIGNOL BRANDING V9.3 --- */
+        .rossignol-header {
+            display: flex; align-items: center; justify-content: center; gap: 15px;
+            margin-bottom: 8px; width: 100%;
+        }
+        
+        .rossignol-text {
+            font-family: 'Orbitron'; 
+            font-weight: 900; 
+            font-size: 24px; 
+            color: #00ff00; /* Vert pur comme sur l'image */
+            /* Effet néon intense */
+            text-shadow: 0 0 5px #00ff00, 0 0 15px #00ff00, 0 0 30px #00ff00; 
+            text-align: center; 
+            white-space: nowrap;
+        }
+        
+        .rossignol-icon { 
+            font-size: 28px; 
+            filter: drop-shadow(0 0 8px #00ff00); /* Halo autour des émojis aussi */
+        }
+        
+        .email-highlight {
+            font-family: 'Roboto Mono'; 
+            font-size: 16px; 
+            color: #4d94ff; /* Bleu clair lisible sur noir (proche de l'image) */
+            display: block; 
+            margin-top: 5px; 
+            text-shadow: 0 0 2px #0033cc;
+            letter-spacing: 1px;
+            text-decoration: underline; /* Souligné comme sur l'image */
+        }
+
+        /* --- SPECIFIC: WARNING TEXT (MANUAL) - MODIFIÉ V9.3 --- */
+        .manual-warning {
+            font-family: 'Orbitron'; 
+            color: #ff3333; 
+            font-weight: 900; /* Plus gras */
+            font-size: 13px; /* Plus gros (était 10px) */
+            margin-top: 10px; 
+            text-align: center; 
+            max-width: 90%; 
+            line-height: 1.5; /* Meilleur espacement des lignes */
+            text-shadow: 0 0 5px #500;
+            text-transform: uppercase;
+        }
+
+       /* --- SPECIFIC: DEV MESSAGE V9.5 --- */
+        .dev-msg-active { 
+            color: #ff3333 !important; 
+            font-weight: 900 !important; 
+            font-size: 15px !important; /* Assez gros pour être lisible */
+            line-height: 1.5 !important; /* Bien espacé sur 2 lignes */
+            animation: pulse 0.2s infinite; 
+            text-shadow: 0 0 5px #ff0000;
+            
+            /* Prend toute la place disponible pour centrer */
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* GARDER CE BLOC POUR LE MOBILE */
+        @media (max-width: 600px) {
+            .rossignol-text { font-size: 16px; }
+            .rossignol-icon { font-size: 18px; }
+            .manual-warning { font-size: 11px; } 
+        }
+
     </style>
 </head>
 <body>
@@ -380,7 +488,7 @@
         <div class="control-panel" id="main-panel" onclick="event.stopPropagation()">
             <div class="drag-bar" id="drag-handle"><div class="grip-lines"></div></div>
             <div class="panel-header">
-                <span class="app-title">Shnopia Light Engine V8</span>
+                <span class="app-title">Shnopia Light Engine V8.3</span>
                 
                 <div class="header-controls">
                     <span class="lang-icon" onclick="toggleLangMenu(event)">🌍</span>
@@ -567,24 +675,105 @@
             </div>
 
             <div id="tab-text" class="panel-content">
-                <div class="control-group"><div class="label-row"><span data-tr="MESSAGE">MESSAGE</span></div><div class="text-input-wrapper"><input type="text" id="text-content" placeholder="TAPEZ ICI" value="Shnopia Light Engine enhances your set"></div></div>
+                <div class="control-group">
+                    <div class="label-row"><span data-tr="MESSAGE">MESSAGE</span></div>
+                    <div class="text-input-wrapper">
+                       <input type="text" id="text-content" placeholder="TAPEZ ICI" value="Rossignol Grip Vibe Coding - Coded with Google Gemini PRO 3">
+                    </div>
+                </div>
+                
                 <button class="text-toggle-btn momentary-btn" id="btn-text-toggle" onclick="toggleText()" data-tr="TEXT_OFF">TEXTE: OFF</button>
+                
                 <div style="margin-top: 10px;">
-                    <div class="control-group"><div class="label-row"><span data-tr="FONT">POLICE</span></div><select id="input-text-font" class="dropdown"><option value="'Roboto Mono', monospace">Standard Tech</option><option value="'Bebas Neue', sans-serif">Cinéma</option><option value="'Press Start 2P', cursive">Pixel</option><option value="'Lobster', cursive">Manuscrit</option><option value="'Orbitron', sans-serif">Futuriste</option><option value="'Pacifico', cursive">Vintage</option><option value="'Bangers', cursive">Comics</option><option value="'Creepster', cursive">Horreur</option><option value="'Monoton', cursive">Rétro Lines</option><option value="'Black Ops One', cursive">Militaire</option></select></div>
-                    <div class="control-group"><div class="label-row"><span data-tr="EFFECT">EFFET</span></div><select id="input-text-effect" class="dropdown"><option value="NONE">Aucun</option><option value="NEON">Neon</option><option value="GLITCH">Glitch</option><option value="WAVE">Wave</option><option value="TYPE">Typewriter</option><option value="STROKE">Outline</option><option value="MIRROR">Reflet</option><option value="SHAKE">Tremblement</option><option value="RAINBOW">Rainbow</option><option value="BOUNCE">Rebond</option><option value="BREATHE">Respiration</option></select></div>
-                    <div class="control-group modifier-slider" id="grp-text-fx"><div class="label-row"><span data-tr="INTENSITY">INTENSITÉ</span><span id="val-text-fx-lvl">50%</span></div><input type="range" min="0" max="100" value="50" id="input-text-fx-lvl" oninput="updateTextSlider()"></div>
-                    <div class="control-group"><div class="label-row"><span data-tr="SIZE">TAILLE</span><span id="val-text-size">50%</span></div><input type="range" min="5" max="100" value="50" id="input-text-size"></div>
-                    <div class="control-group"><div class="label-row"><span data-tr="SPEED">VITESSE</span><span id="val-text-speed">5</span></div><input type="range" min="0" max="30" value="5" id="input-text-speed"></div>
-                    <div class="control-group"><div class="label-row"><span data-tr="COLOR">COULEUR</span></div><input type="color" id="input-text-color" value="#ffffff" style="width:100%; height:30px; border:none; padding: 0;"></div>
+                    <div class="control-group">
+                        <div class="label-row"><span data-tr="FONT">POLICE</span></div>
+                        <select id="input-text-font" class="dropdown">
+                            <option value="'Roboto Mono', monospace">Standard Tech</option>
+                            <option value="'Bebas Neue', sans-serif">Cinéma</option>
+                            <option value="'Press Start 2P', cursive">Pixel</option>
+                            <option value="'Lobster', cursive">Manuscrit</option>
+                            <option value="'Orbitron', sans-serif">Futuriste</option>
+                            <option value="'Pacifico', cursive">Vintage</option>
+                            <option value="'Bangers', cursive">Comics</option>
+                            <option value="'Creepster', cursive">Horreur</option>
+                            <option value="'Monoton', cursive">Rétro Lines</option>
+                            <option value="'Black Ops One', cursive" selected>Militaire</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="label-row"><span data-tr="EFFECT">EFFET</span></div>
+                        <select id="input-text-effect" class="dropdown">
+                            <option value="NONE">Aucun</option>
+                            <option value="NEON">Neon</option>
+                            <option value="GLITCH">Glitch</option>
+                            <option value="WAVE">Wave</option>
+                            <option value="TYPE">Typewriter</option>
+                            <option value="STROKE" selected>Outline</option>
+                            <option value="MIRROR">Reflet</option>
+                            <option value="SHAKE">Tremblement</option>
+                            <option value="RAINBOW">Rainbow</option>
+                            <option value="BOUNCE">Rebond</option>
+                            <option value="BREATHE">Respiration</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group modifier-slider" id="grp-text-fx">
+                        <div class="label-row"><span data-tr="INTENSITY">INTENSITÉ</span><span id="val-text-fx-lvl">50%</span></div>
+                        <input type="range" min="0" max="100" value="50" id="input-text-fx-lvl" oninput="updateTextSlider()">
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="label-row"><span data-tr="SIZE">TAILLE</span><span id="val-text-size">22%</span></div>
+                        <input type="range" min="5" max="100" value="22" id="input-text-size">
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="label-row"><span data-tr="SPEED">VITESSE</span><span id="val-text-speed">1</span></div>
+                        <input type="range" min="0" max="30" value="1" id="input-text-speed">
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="label-row"><span data-tr="COLOR">COULEUR</span></div>
+                        <input type="color" id="input-text-color" value="#ffffff" style="width:100%; height:30px; border:none; padding: 0;">
+                    </div>
                 </div>
             </div>
             
             <div id="tab-help" class="panel-content">
-                <div class="rossignol-box">
-                    <span class="rossignol-brand"><span class="rossignol-icon">🐦</span> Rossignol Grip Vibe Coding</span>
-                    <a href="mailto:rossignol.p@gmail.com" class="contact-link">Contact: rossignol.p@gmail.com</a>
+                <div class="help-container">
+                    
+                    <div class="action-box" onclick="triggerAction(this, 'mail')">
+                        <div class="rossignol-header">
+                            <span class="rossignol-icon">🐦</span>
+                            <span class="rossignol-text">Rossignol Grip Vibe Coding</span>
+                            <span class="rossignol-icon">🗼🇫🇷</span>
+                        </div>
+                        <span class="box-sub">
+                            <span data-tr="CONTACT_SUB">Contact & Support:</span>
+                            <span class="email-highlight">ROSSIGNOL.P@GMAIL.COM</span>
+                        </span>
+                    </div>
+
+                    <div class="action-box" onclick="triggerDevMsg(this)">
+                        <span class="box-title" id="dev-title" data-tr="DEV_TITLE">MESSAGE DU DÉVELOPPEUR</span>
+                        <span class="box-sub" id="dev-sub" data-tr="DEV_SUB">CLIQUEZ POUR LIRE</span>
+                    </div>
+
+                    <div class="action-box" onclick="triggerAction(this, 'manual')">
+                        <span class="box-title" data-tr="MANUAL_TITLE">MANUEL UTILISATEUR</span>
+                        <span class="box-sub" data-tr="MANUAL_SUB">(Ouvre un nouvel onglet)</span>
+                        <div class="manual-warning" data-tr="MANUAL_WARN">
+                            Attention vous allez sortir de l'application, il faudra revenir au bon onglet dans votre navigateur pour retrouver vos Set-up
+                        </div>
+                    </div>
+
+                    <a href="SLE V8 Final.html" download id="download-link" class="action-box" onclick="triggerDownload(this); return false;">
+                        <span class="box-title" data-tr="DL_TITLE">TÉLÉCHARGER L'APP</span>
+                        <span class="box-sub" id="dl-counter-display">OFFLINE ACCESS: CHECKING...</span>
+                    </a>
+
                 </div>
-                <div id="help-content"></div>
             </div>
 
             <div class="panel-footer">
@@ -602,7 +791,7 @@
     </div>
 
     <script>
-       // --- TRANSLATION DICTIONARY ---
+       // --- TRANSLATION DICTIONARY (VERSION 9.2) ---
        const DICT = {
             FR: {
                 INTRO_TITLE: "INTRODUCTION",
@@ -614,7 +803,15 @@
                 SPEED: "VITESSE", COLOR_OVERRIDE: "REMPLACEMENT COULEURS (CLIC)", PRESETS: "PRESETS", MODIFIERS: "MODIFIEURS",
                 MESSAGE: "MESSAGE", FONT: "POLICE", EFFECT: "EFFET", INTENSITY: "INTENSITÉ", SIZE: "TAILLE", TEXT_OFF: "TEXTE: OFF", TEXT_ON: "TEXTE: ON",
                 DIMMER: "INTENSITÉ", FULLSCREEN: "PLEIN ÉCRAN",
-                HELP_CONTENT: "<div class='rossignol-box' style='padding: 20px; margin-bottom: 20px;'><a href='manual.html' target='_blank' style='font-family: \"Orbitron\"; color: #00ff00; text-decoration: underline; font-weight: 900; font-size: 18px; text-shadow: 0 0 10px #00ff00;'>Manuel disponible ici</a><span style='font-family: \"Orbitron\"; color: #ff0000; font-weight: bold; display: inline-block; margin-top: 15px; max-width: 95%; line-height: 1.5; font-size: 12px; text-align: center;'>(Attention vous allez sortir de l'application, il faudra revenir au bon onglet dans votre navigateur pour retrouver vos Set-up)</span></div>"
+                
+                // --- TRADUCTIONS V9.2 ---
+                CONTACT_SUB: "Contact & Support:",
+                DEV_TITLE: "MESSAGE DU DÉVELOPPEUR",
+                DEV_SUB: "CLIQUEZ POUR LIRE",
+                MANUAL_TITLE: "MANUEL UTILISATEUR",
+                MANUAL_SUB: "(Ouvre un nouvel onglet)",
+                MANUAL_WARN: "Attention: vous allez sortir de l'application, il faudra revenir au bon onglet dans votre navigateur pour retrouver vos Set-up",
+                DL_TITLE: "TÉLÉCHARGER L'APP"
             },
             EN: {
                 INTRO_TITLE: "INTRODUCTION",
@@ -626,35 +823,75 @@
                 SPEED: "SPEED", COLOR_OVERRIDE: "COLOR OVERRIDE", PRESETS: "PRESETS", MODIFIERS: "MODIFIERS",
                 MESSAGE: "MESSAGE", FONT: "FONT", EFFECT: "EFFECT", INTENSITY: "INTENSITÉ", SIZE: "SIZE", TEXT_OFF: "TEXT: OFF", TEXT_ON: "TEXT: ON",
                 DIMMER: "DIMMER", FULLSCREEN: "FULL SCREEN",
-                HELP_CONTENT: "<div class='rossignol-box' style='padding: 20px; margin-bottom: 20px;'><a href='manual.html' target='_blank' style='font-family: \"Orbitron\"; color: #00ff00; text-decoration: underline; font-weight: 900; font-size: 18px; text-shadow: 0 0 10px #00ff00;'>Manual available here</a><span style='font-family: \"Orbitron\"; color: #ff0000; font-weight: bold; display: inline-block; margin-top: 15px; max-width: 95%; line-height: 1.5; font-size: 12px; text-align: center;'>(Warning: you will leave the app, you will have to return to the right tab in your browser to find your Set-ups)</span></div>"
+                
+                // --- V9.2 ---
+                CONTACT_SUB: "Contact & Support:",
+                DEV_TITLE: "DEVELOPER MESSAGE",
+                DEV_SUB: "CLICK TO READ",
+                MANUAL_TITLE: "USER MANUAL",
+                MANUAL_SUB: "(Opens new tab)",
+                MANUAL_WARN: "(Warning: you will leave the app, you will have to return to the right tab in your browser to find your Set-ups)",
+                DL_TITLE: "DOWNLOAD APP"
             },
             ES: { 
                 INTRO_TITLE: "INTRODUCCIÓN", 
                 INTRO_TEXT: "Shnopia Light Engine es una interfaz web universal diseñada para transformar instantáneamente cualquier pantalla (ordenador, tableta, smartphone) en una fuente de luz profesional. Controla su pantalla como un proyector de cine totalmente ajustable, sin ninguna instalación.", 
                 INTRO_HINT: "HAGA CLIC PARA CONTINUAR", 
                 PREVIEW: "VISTA", HIDE: "OCULTAR", LIVE: "VIVO", COLOR: "COLOR", WHITE: "BLANCO", CINEMA: "CINE FX", SHNOPIA: "SHNOPIA FX", MATRIX: "MATRIZ", TEXT: "TEXTO", HELP: "AYUDA", SATURATION: "SATURACION", RED: "ROJO", GREEN: "VERDE", BLUE: "AZUL", RECALL_WHITE: "RECUPERAR BLANCO", ACTIVATE_COLOR: "ACTIVAR COLOR", MEMORIES: "MEMORIAS", KELVIN: "KELVIN", TINT: "TINTE", MANUAL_WHITE: "BLANCO MANUAL", ACTIVATE_WHITE: "ACTIVAR BLANCO", SPEED: "VELOCIDAD", COLOR_OVERRIDE: "COLOR", PRESETS: "PRESETS", MODIFIERS: "MODIFICADORES", MESSAGE: "MENSAJE", FONT: "FUENTE", EFFECT: "EFECTO", INTENSITY: "INTENSIDAD", SIZE: "TAMAÑO", TEXT_OFF: "TEXTO: OFF", TEXT_ON: "TEXTO: ON", DIMMER: "INTENSIDAD", FULLSCREEN: "PANTALLA COMPLETA", 
-                HELP_CONTENT: "<div class='rossignol-box' style='padding: 20px; margin-bottom: 20px;'><a href='manual.html' target='_blank' style='font-family: \"Orbitron\"; color: #00ff00; text-decoration: underline; font-weight: 900; font-size: 18px; text-shadow: 0 0 10px #00ff00;'>Manual disponible aquí</a><span style='font-family: \"Orbitron\"; color: #ff0000; font-weight: bold; display: inline-block; margin-top: 15px; max-width: 95%; line-height: 1.5; font-size: 12px; text-align: center;'>(Atención: saldrá de la aplicación, tendrá que volver a la pestaña correcta de su navegador para recuperar sus Set-ups)</span></div>" 
+                
+                // --- V9.2 ---
+                CONTACT_SUB: "Contacto y Soporte:",
+                DEV_TITLE: "MENSAJE DEL DESARROLLADOR",
+                DEV_SUB: "HAZ CLIC PARA LEER",
+                MANUAL_TITLE: "MANUAL DE USUARIO",
+                MANUAL_SUB: "(Abre nueva pestaña)",
+                MANUAL_WARN: "(Atención: saldrá de la aplicación, tendrá que volver a la pestaña correcta de su navegador para recuperar sus Set-ups)",
+                DL_TITLE: "DESCARGAR APP"
             },
             RU: { 
                 INTRO_TITLE: "ВВЕДЕНИЕ", 
                 INTRO_TEXT: "Shnopia Light Engine — это универсальный веб-интерфейс, разработанный для мгновенного превращения любого экрана (компьютера, планшета, смартфона) в профессиональный источник света. Он управляет вашим экраном как полностью регулируемым кинопроектором, без какой-либо установки.", 
                 INTRO_HINT: "НАЖМИТЕ ДЛЯ ПРОДОЛЖЕНИЯ", 
                 PREVIEW: "ПРЕВЬЮ", HIDE: "СКРЫТЬ", LIVE: "LIVE", COLOR: "ЦВЕТ", WHITE: "БЕЛЫЙ", CINEMA: "КИНО FX", SHNOPIA: "SHNOPIA FX", MATRIX: "МАТРИЦА", TEXT: "ТЕКСТ", HELP: "ПОМОЩЬ", SATURATION: "НАСЫЩЕННОСТЬ", RED: "КРАСНЫЙ", GREEN: "ЗЕЛЕНЫЙ", BLUE: "СИНИЙ", RECALL_WHITE: "БЕЛЫЙ", ACTIVATE_COLOR: "ЦВЕТ", MEMORIES: "ПАМЯТЬ", KELVIN: "K", TINT: "ОТТЕНОК", MANUAL_WHITE: "РУЧНОЙ", ACTIVATE_WHITE: "БЕЛЫЙ", SPEED: "СКОРОСТЬ", COLOR_OVERRIDE: "ЗАМЕНА", PRESETS: "ПРЕСЕТЫ", MODIFIERS: "МОДИФИКАТОРЫ", MESSAGE: "СООБЩЕНИЕ", FONT: "ШРИФТ", EFFECT: "ЭФФЕКТ", INTENSITY: "ИНТЕНСИВНОСТЬ", SIZE: "РАЗМЕР", TEXT_OFF: "ВЫКЛ", TEXT_ON: "ВКЛ", DIMMER: "ЯРКОСТЬ", FULLSCREEN: "ЭКРАН", 
-                HELP_CONTENT: "<div class='rossignol-box' style='padding: 20px; margin-bottom: 20px;'><a href='manual.html' target='_blank' style='font-family: \"Orbitron\"; color: #00ff00; text-decoration: underline; font-weight: 900; font-size: 18px; text-shadow: 0 0 10px #00ff00;'>Руководство доступно здесь</a><span style='font-family: \"Orbitron\"; color: #ff0000; font-weight: bold; display: inline-block; margin-top: 15px; max-width: 95%; line-height: 1.5; font-size: 12px; text-align: center;'>(Внимание: вы покидаете приложение, вам нужно будет вернуться на нужную вкладку браузера, чтобы вернуть свои настройки)</span></div>" 
+                
+                // --- V9.2 ---
+                CONTACT_SUB: "Связаться с нами:",
+                DEV_TITLE: "СООБЩЕНИЕ РАЗРАБОТЧИКА",
+                DEV_SUB: "НАЖМИТЕ, ЧТОБЫ ПРОЧИТАТЬ",
+                MANUAL_TITLE: "РУКОВОДСТВО",
+                MANUAL_SUB: "(Откроется в новой вкладке)",
+                MANUAL_WARN: "(Внимание: вы покидаете приложение, вам нужно будет вернуться на нужную вкладку браузера, чтобы вернуть свои настройки)",
+                DL_TITLE: "СКАЧАТЬ ПРИЛОЖЕНИЕ"
             },
             JP: { 
                 INTRO_TITLE: "はじめに", 
                 INTRO_TEXT: "Shnopia Light Engineは、あらゆる画面（コンピュータ、タブレット、スマートフォン）を即座にプロフェッショナルな光源に変えるために設計されたユニバーサルWebインターフェースです。インストール不要で、完全に調整可能なシネマプロジェクターのように画面を制御します。", 
                 INTRO_HINT: "クリックして続行", 
                 PREVIEW: "プレビュー", HIDE: "隠す", LIVE: "ライブ", COLOR: "カラー", WHITE: "ホワイト", CINEMA: "シネマ", SHNOPIA: "SHNOPIA", MATRIX: "マトリックス", TEXT: "テキスト", HELP: "ヘルプ", SATURATION: "彩度", RED: "赤", GREEN: "緑", BLUE: "青", RECALL_WHITE: "ホワイト", ACTIVATE_COLOR: "カラー", MEMORIES: "メモリ", KELVIN: "K", TINT: "色合い", MANUAL_WHITE: "手動", ACTIVATE_WHITE: "ホワイト", SPEED: "速度", COLOR_OVERRIDE: "置換", PRESETS: "プリセット", MODIFIERS: "修飾子", MESSAGE: "メッセージ", FONT: "フォント", EFFECT: "効果", INTENSITY: "強度", SIZE: "サイズ", TEXT_OFF: "OFF", TEXT_ON: "ON", DIMMER: "調光", FULLSCREEN: "全画面", 
-                HELP_CONTENT: "<div class='rossignol-box' style='padding: 20px; margin-bottom: 20px;'><a href='manual.html' target='_blank' style='font-family: \"Orbitron\"; color: #00ff00; text-decoration: underline; font-weight: 900; font-size: 18px; text-shadow: 0 0 10px #00ff00;'>マニュアルはこちら</a><span style='font-family: \"Orbitron\"; color: #ff0000; font-weight: bold; display: inline-block; margin-top: 15px; max-width: 95%; line-height: 1.5; font-size: 12px; text-align: center;'>(注意：アプリから移動します。設定に戻るにはブラウザの正しいタブに戻ってください)</span></div>" 
+                
+                // --- V9.2 ---
+                CONTACT_SUB: "お問い合わせ:",
+                DEV_TITLE: "開発者メッセージ",
+                DEV_SUB: "クリックして読む",
+                MANUAL_TITLE: "ユーザーマニュアル",
+                MANUAL_SUB: "(新しいタブで開きます)",
+                MANUAL_WARN: "(注意：アプリから移動します。設定に戻るにはブラウザの正しいタブに戻ってください)",
+                DL_TITLE: "アプリをダウンロード"
             },
             PL: { 
                 INTRO_TITLE: "WPROWADZENIE", 
                 INTRO_TEXT: "Shnopia Light Engine to uniwersalny interfejs internetowy zaprojektowany, aby natychmiast zmienić dowolny ekran (komputer, tablet, smartfon) w profesjonalne źródło światła. Steruje ekranem jak w pełni regulowanym projektorem kinowym, bez żadnej instalacji.", 
                 INTRO_HINT: "KLIKNIJ, ABY KONTYNUOWAĆ", 
                 PREVIEW: "PODGLĄD", HIDE: "UKRYJ", LIVE: "LIVE", COLOR: "KOLOR", WHITE: "BIAŁY", CINEMA: "KINO", SHNOPIA: "SHNOPIA", MATRIX: "MATRYCA", TEXT: "TEKST", HELP: "POMOC", SATURATION: "NASYCENIE", RED: "CZERWONY", GREEN: "ZIELONY", BLUE: "NIEBIESKI", RECALL_WHITE: "BIAŁY", ACTIVATE_COLOR: "KOLOR", MEMORIES: "PAMIĘĆ", KELVIN: "K", TINT: "ODCIEŃ", MANUAL_WHITE: "RĘCZNY", ACTIVATE_WHITE: "BIAŁY", SPEED: "PRĘDKOŚĆ", COLOR_OVERRIDE: "ZAMIANA", PRESETS: "PRESETY", MODIFIERS: "MODYFIKATORY", MESSAGE: "WIADOMOŚĆ", FONT: "CZCIONKA", EFFECT: "EFEKT", INTENSITY: "MOC", SIZE: "ROZMIAR", TEXT_OFF: "WYŁ", TEXT_ON: "TEKST: WŁ", DIMMER: "MOC", FULLSCREEN: "PEŁNY EKRAN", 
-                HELP_CONTENT: "<div class='rossignol-box' style='padding: 20px; margin-bottom: 20px;'><a href='manual.html' target='_blank' style='font-family: \"Orbitron\"; color: #00ff00; text-decoration: underline; font-weight: 900; font-size: 18px; text-shadow: 0 0 10px #00ff00;'>Instrukcja dostępna tutaj</a><span style='font-family: \"Orbitron\"; color: #ff0000; font-weight: bold; display: inline-block; margin-top: 15px; max-width: 95%; line-height: 1.5; font-size: 12px; text-align: center;'>(Uwaga, opuścisz aplikację, będziesz musiał wrócić do odpowiedniej karty w przeglądarce, aby odzyskać swoje ustawienia)</span></div>" 
+                
+                // --- V9.2 ---
+                CONTACT_SUB: "Kontakt i wsparcie:",
+                DEV_TITLE: "WIADOMOŚĆ OD DEWELOPERA",
+                DEV_SUB: "KLIKNIJ, ABY PRZECZYTAĆ",
+                MANUAL_TITLE: "INSTRUKCJA OBSŁUGI",
+                MANUAL_SUB: "(Otwiera nową kartę)",
+                MANUAL_WARN: "(Uwaga: opuścisz aplikację, musisz wrócić do odpowiedniej karty przeglądarki, aby odzyskać ustawienia)",
+                DL_TITLE: "POBIERZ APLIKACJĘ"
             }
         };
     
@@ -703,12 +940,23 @@
         
         let CURRENT_LANG = 'FR';
 
-        // --- STATE ---
+       // --- STATE INITIAL V9.4 ---
         let state = {
             mode: 'WHEEL', kelvin: 3200, tint: 0, hue: 0, sat: 100, val: 100,
             dimmer: 100, blackout: false, fxMode: 0, speedCinema: 4, speedShnopia: 50, fxParam1: 50, fxParam2: 50, mapMode: -1,
             time: 0, 
-            textOn: false, textString: "Shnopia Light Engine enhances your set", textSize: 50, textSpeed: 5, textColor: "#ffffff", textPos: 0, textFont: "'Roboto Mono', monospace", textEffect: "NONE", textFxLvl: 50,
+            
+            // PARAMÈTRES TEXTE (OFF par défaut, mais configuré)
+            textOn: false,  // <--- ICI : FALSE
+            textString: "Rossignol Grip Vibe Coding - Coded with Google Gemini PRO 3", 
+            textSize: 22, 
+            textSpeed: 1, 
+            textColor: "#ffffff", 
+            textPos: 0, 
+            textFont: "'Black Ops One', cursive", 
+            textEffect: "STROKE", 
+            textFxLvl: 50, 
+
             gridActive: true, gridLevel: 1, warpActive: false, warpLevel: 0, noiseActive: false, noiseLevel: 0,
             whiteRgb: {r:255, g:255, b:255}, savedColors: ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#00FFFF'], paletteActive: [false, false, false, false, false],
         };
@@ -1472,6 +1720,123 @@
                 counterEl.style.color = "#ccaa00"; // Couleur ambre pour signaler le mode local
             });
         })();
+
+// --- NEW DOWNLOAD & COUNTER LOGIC (CORRECTED) ---
+        window.refreshDlCount = () => {
+            // On vise une clé spécifique pour la V8
+            fetch('https://api.counterapi.dev/v1/shnopia_sle/dl_v8_final/')
+            .then(r => r.json())
+            .then(d => {
+                const el = document.getElementById('dl-counter-display');
+                // Si la clé n'existe pas encore, d.count est undefined, on met 0
+                const count = (d.count !== undefined) ? d.count : 0;
+                if(el) el.innerText = "OFFLINE ACCESS: #" + count;
+            })
+            .catch(e => {
+                // Si erreur (bloqueur de pub ou réseau), on affiche N/A proprement
+                const el = document.getElementById('dl-counter-display');
+                if(el) el.innerText = "OFFLINE ACCESS: N/A"; 
+            });
+        };
+
+        window.triggerDownload = (btn) => {
+            // Animation visuelle
+            btn.classList.add('flash'); 
+            setTimeout(()=>btn.classList.remove('flash'), 500);
+            
+            // Incrémentation (+1)
+            fetch('https://api.counterapi.dev/v1/shnopia_sle/dl_v8_final/up')
+            .then(r => r.json())
+            .then(d => {
+                const el = document.getElementById('dl-counter-display');
+                if(el && d.count !== undefined) el.innerText = "OFFLINE ACCESS: #" + d.count;
+            })
+            .catch(e => console.log("Compteur bloqué par le navigateur"));
+        };
+
+        // Override setLangGlobal pour afficher le compteur au changement de langue
+        window.setLangGlobal = function(lang) {
+            CURRENT_LANG = lang;
+            document.getElementById('lang-menu').classList.remove('show');
+            const d = DICT[lang];
+            if(d) {
+                // Met à jour tous les textes simples via data-tr
+                document.querySelectorAll('[data-tr]').forEach(el => {
+                    const key = el.getAttribute('data-tr');
+                    if(d[key]) el.innerText = d[key];
+                });
+                
+                // C'est ici qu'on a SUPPRIMÉ l'injection de HELP_CONTENT
+                
+                // Lancement du rafraîchissement du compteur
+                setTimeout(refreshDlCount, 100); 
+            }
+            const txtBtn = document.getElementById('btn-text-toggle');
+            if(state.textOn) txtBtn.innerText = d.TEXT_ON; else txtBtn.innerText = d.TEXT_OFF;
+        };
+
+/* --- FONCTIONS VERSION 9 (HELP & ACTIONS) --- */
+
+        // Gère les clics sur Manuel et Contact
+        window.triggerAction = (el, type) => {
+            // Effet visuel Flash
+            el.classList.add('flash');
+            setTimeout(() => el.classList.remove('flash'), 300);
+
+            if(type === 'manual') {
+                // Ouvre le manuel après un petit délai pour voir le flash
+                setTimeout(() => window.open('manual.html', '_blank'), 300);
+            } else if (type === 'mail') {
+                setTimeout(() => window.location.href = "mailto:rossignol.p@gmail.com", 300);
+            }
+        };
+
+    // Gère le message caché (le bouton qui "ne sert à rien")
+        window.triggerDevMsg = (el) => {
+            el.classList.add('flash');
+            setTimeout(() => el.classList.remove('flash'), 300);
+            
+            const title = el.querySelector('#dev-title');
+            const sub = el.querySelector('#dev-sub');
+            
+            // Étape 1 : On efface tout visuellement (Fade out)
+            title.style.transition = 'opacity 0.2s';
+            sub.style.transition = 'opacity 0.2s';
+            title.style.opacity = '0';
+            sub.style.opacity = '0';
+            
+            setTimeout(() => {
+                // Étape 2 : On supprime le titre du flux (il ne prend plus de place)
+                title.style.display = 'none';
+
+                // Étape 3 : On change le texte et on applique le style "Gros Message"
+                sub.innerText = "LOL il ne sert à rien pour l'instant ce bouton, mais recommences.";
+                sub.classList.add('dev-msg-active');
+                
+                // Étape 4 : Réapparition (Fade in)
+                sub.style.opacity = '1';
+            }, 300);
+        };
+
+        // Gère le téléchargement (remplace l'ancienne fonction triggerDownload)
+        window.triggerDownload = (el) => {
+            // Animation visuelle
+            el.classList.add('flash'); 
+            setTimeout(()=>el.classList.remove('flash'), 500);
+            
+            // Incrémentation du compteur (+1)
+            fetch('https://api.counterapi.dev/v1/shnopia_sle/dl_v8_final/up')
+            .then(r => r.json())
+            .then(d => {
+                const display = document.getElementById('dl-counter-display');
+                if(display && d.count !== undefined) display.innerText = "OFFLINE ACCESS: #" + d.count;
+            })
+            .catch(e => console.log("Compteur bloqué par le navigateur"));
+            
+            // Le return true permet au lien <a> de lancer le téléchargement naturellement
+            return true;
+        };
+
     </script>
 </body>
 </html>
