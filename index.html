@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Professional Screen Light | SLE V8.3</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Orbitron:wght@500;900&family=Anton&family=Bebas+Neue&family=Press+Start+2P&family=Lobster&family=Pacifico&family=Bangers&family=Creepster&family=Monoton&family=Audiowide&family=Black+Ops+One&family=Syncopate&family=VT323&family=Righteous&family=Fredoka+One&family=Luckiest+Guy&family=Russo+One&family=Special+Elite&family=Wallpoet&display=swap" rel="stylesheet">
-    <style>
+ 
+<script src="presets.js"></script>
+
+<style>
         /* --- CORE --- */
         :root { 
             --panel-bg: rgba(10, 15, 10, 0.98); 
@@ -94,11 +97,11 @@
             .startup-text { font-size: 12px; }
             .intro-lang-bar { margin-top: 20px; }
             
-            /* FORÇAGE TAILLE RÉDUITE ROUE MOBILE */
-            .wheel-wrapper { min-height: 100px !important; }
+           /* FORÇAGE TAILLE RÉDUITE ROUE MOBILE */
+            .wheel-wrapper { min-height: 70px !important; }
             .wheel-container { 
-                width: min(150px, 25vh) !important; 
-                height: min(150px, 25vh) !important; 
+                width: min(100px, 17vh) !important; 
+                height: min(100px, 17vh) !important; 
             }
         }
         }
@@ -340,6 +343,50 @@
         
         #cork-icon { display: none !important; }
 
+/* --- MODAL QR CODE --- */
+#qr-modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9); z-index: 5000;
+    display: none; justify-content: center; align-items: center;
+    backdrop-filter: blur(5px);
+}
+.qr-box {
+    background: #001100; border: 2px solid var(--lcd-on);
+    padding: 20px; border-radius: 10px; width: 90%; max-width: 400px;
+    display: flex; flex-direction: column; align-items: center; gap: 15px;
+    box-shadow: 0 0 30px rgba(51, 255, 51, 0.2);
+    animation: slideIn 0.3s ease-out;
+}
+.qr-title {
+    font-family: 'Orbitron'; color: var(--lcd-on); font-size: 16px; 
+    text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px var(--lcd-on);
+}
+#qrcode-container {
+    background: #fff; padding: 10px; border-radius: 4px;
+    box-shadow: 0 0 15px rgba(255,255,255,0.2);
+}
+.code-textarea {
+    width: 100%; height: 60px; background: #002200; border: 1px solid #005500;
+    color: #0f0; font-family: 'Roboto Mono'; font-size: 10px; padding: 5px;
+    border-radius: 4px; resize: none; word-break: break-all;
+}
+.file-upload-label {
+    background: #004400; color: #fff; padding: 10px 20px; border-radius: 4px;
+    cursor: pointer; font-family: 'Orbitron'; font-size: 11px; border: 1px solid #0f0;
+    transition: 0.2s; width: 100%; text-align: center;
+}
+.file-upload-label:hover { background: #006600; box-shadow: 0 0 10px #0f0; }
+.qr-actions { display: flex; gap: 10px; width: 100%; }
+.qr-btn-close {
+    background: transparent; border: 1px solid #ff3333; color: #ff3333;
+    padding: 8px; flex: 1; cursor: pointer; font-family: 'Orbitron'; font-weight: bold;
+}
+.qr-btn-copy {
+    background: var(--lcd-on); border: 1px solid #fff; color: #000;
+    padding: 8px; flex: 1; cursor: pointer; font-family: 'Orbitron'; font-weight: bold;
+}
+@keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
 /* --- ACTION BOXES V9.3 (WARNING BIGGER) --- */
         .help-container {
             display: flex; flex-direction: column; height: 100%; gap: 15px; padding-bottom: 5px;
@@ -362,30 +409,24 @@
         .box-title { 
             font-family: 'Orbitron'; 
             font-weight: 900; 
-            font-size: 22px; /* Même taille que la case Rossignol */
-            color: #00ff00; /* Vert Pur */
+            font-size: 19px; /* Était 22px */
+            color: #00ff00; 
             text-align: center; margin-bottom: 5px; pointer-events: none; 
-            
-            /* GROS HALO NÉON (Identique à la 1ère case) */
             text-shadow: 0 0 5px #00ff00, 0 0 15px #00ff00, 0 0 30px #00ff00;
-            
             width: 100%; line-height: 1.2; text-transform: uppercase;
         }
         
         .box-sub { 
-            font-family: 'Orbitron'; /* On passe tout en Orbitron pour le look Cyber */
-            font-size: 13px; 
-            color: #00ff00; /* Vert Pur */
+            font-family: 'Orbitron'; 
+            font-size: 11px; /* Était 13px */
+            color: #00ff00; 
             font-weight: 900;
             text-align: center; pointer-events: none; letter-spacing: 1px; line-height: 1.4; width: 100%;
-            
-            /* PETIT HALO NÉON pour les sous-titres */
             text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00;
-            
             text-transform: uppercase;
         }
 
-/* --- SPECIFIC: ROSSIGNOL BRANDING V9.6 --- */
+/* --- SPECIFIC: ROSSIGNOL BRANDING V9.6 (MODIFIÉ: -15% SIZE) --- */
         .rossignol-header {
             display: flex; align-items: center; justify-content: center; gap: 10px;
             margin-bottom: 5px; width: 100%;
@@ -395,7 +436,7 @@
         .rossignol-title {
             font-family: 'Orbitron'; 
             font-weight: 900; 
-            font-size: 22px; 
+            font-size: 19px; /* Était 22px */
             color: #00ff00; 
             text-shadow: 0 0 5px #00ff00, 0 0 15px #00ff00, 0 0 30px #00ff00; 
             text-align: center; 
@@ -404,54 +445,53 @@
         }
         
         .rossignol-icon { 
-            font-size: 24px; 
+            font-size: 20px; /* Était 24px */
             filter: drop-shadow(0 0 8px #00ff00); 
         }
         
-        /* Sous-titres (Contact & Email) - MÊME STYLE LUMINEUX */
         .rossignol-neon-sub {
             font-family: 'Orbitron'; 
-            font-weight: 900; /* Même épaisseur */
-            font-size: 15px; /* Juste un peu plus petit pour que ça rentre */
+            font-weight: 900; 
+            font-size: 13px; /* Était 15px */
             color: #00ff00; 
-            text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00; /* Halo lumineux */
+            text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00; 
             display: block; 
             margin-top: 4px; 
             letter-spacing: 1px;
-            text-decoration: none; /* Pas de soulignement */
-            text-transform: uppercase; /* Tout en majuscule pour le look cyber */
+            text-decoration: none; 
+            text-transform: uppercase; 
         }
         
         @media (max-width: 600px) {
-            .rossignol-title { font-size: 16px; }
-            .rossignol-neon-sub { font-size: 12px; }
-            .rossignol-icon { font-size: 18px; }
+            /* Ajustement Mobile -15% */
+            .rossignol-title { font-size: 14px; } /* Était 16px */
+            .rossignol-neon-sub { font-size: 10px; } /* Était 12px */
+            .rossignol-icon { font-size: 16px; } /* Était 18px */
+            .manual-warning { font-size: 9px; } /* Était 11px */
         }
 
-        /* --- SPECIFIC: WARNING TEXT (MANUAL) - MODIFIÉ V9.3 --- */
+        /* --- SPECIFIC: WARNING TEXT (MANUAL) - MODIFIÉ V9.3 (-15%) --- */
         .manual-warning {
             font-family: 'Orbitron'; 
             color: #ff3333; 
-            font-weight: 900; /* Plus gras */
-            font-size: 13px; /* Plus gros (était 10px) */
+            font-weight: 900; 
+            font-size: 10px; /* Était 13px */
             margin-top: 10px; 
             text-align: center; 
             max-width: 90%; 
-            line-height: 1.5; /* Meilleur espacement des lignes */
+            line-height: 1.5; 
             text-shadow: 0 0 5px #500;
             text-transform: uppercase;
         }
 
-       /* --- SPECIFIC: DEV MESSAGE V9.5 --- */
+       /* --- SPECIFIC: DEV MESSAGE V9.5 (-15%) --- */
         .dev-msg-active { 
             color: #ff3333 !important; 
             font-weight: 900 !important; 
-            font-size: 15px !important; /* Assez gros pour être lisible */
-            line-height: 1.5 !important; /* Bien espacé sur 2 lignes */
+            font-size: 13px !important; /* Était 15px */
+            line-height: 1.5 !important; 
             animation: pulse 0.2s infinite; 
             text-shadow: 0 0 5px #ff0000;
-            
-            /* Prend toute la place disponible pour centrer */
             width: 100%;
             height: 100%;
             display: flex;
@@ -465,6 +505,54 @@
             .rossignol-icon { font-size: 18px; }
             .manual-warning { font-size: 11px; } 
         }
+
+/* FORÇAGE DU HALO VERT SUR PAD SÉLECTIONNÉ */
+        .live-pad.active-preset { 
+            border: 2px solid #33ff33 !important; 
+            box-shadow: 0 0 25px #33ff33, inset 0 0 5px #33ff33 !important; 
+            z-index: 50;
+            /* J'ai supprimé la ligne 'background-color' pour qu'on voie toujours la couleur mémorisée */
+        }
+
+/* --- QR CODE PLEIN ÉCRAN (ZOOM) --- */
+#qrcode-container {
+    cursor: zoom-in; /* Curseur loupe + */
+    transition: transform 0.2s;
+}
+#qrcode-container:hover {
+    transform: scale(1.02);
+}
+
+/* La classe qui sera ajoutée au clic */
+#qrcode-container.qr-fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 20000; /* Au-dessus de tout */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    border-radius: 0;
+    cursor: zoom-out; /* Curseur loupe - */
+    border: none;
+    box-shadow: none;
+}
+
+/* Force l'image du QR code à grandir */
+#qrcode-container.qr-fullscreen img {
+    width: auto !important;
+    height: auto !important;
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    box-shadow: 0 0 50px var(--lcd-on); /* Gros halo vert */
+    border: 5px solid #fff;
+    border-radius: 10px;
+}
 
     </style>
 </head>
@@ -492,6 +580,23 @@
     <canvas id="light-canvas"></canvas>
     <canvas id="text-canvas"></canvas>
     <div id="cork-icon"></div>
+
+<div id="qr-modal-overlay" onclick="closeQrModal(event)">
+    <div class="qr-box" onclick="event.stopPropagation()">
+        <div class="qr-title">SHNOPIA CODE</div>
+        
+        <div style="width:100%; text-align:left; font-size:10px; color:#00aa00; margin-bottom:5px; font-family:'Orbitron';">
+            CODE DE CONFIGURATION (COPIER/COLLER) :
+        </div>
+        
+        <textarea id="code-text-area" class="code-textarea" onclick="this.select()"></textarea>
+        
+        <div class="qr-actions">
+            <button class="qr-btn-copy" onclick="copyCodeToClip()">COPIER LE CODE</button>
+            <button class="qr-btn-close" onclick="closeQrModal(true)">FERMER</button>
+        </div>
+    </div>
+</div>
 
     <div id="modal-overlay" onclick="closeModalOnOutside(event)">
         <div class="modal-box">
@@ -527,7 +632,10 @@
                         <div class="lang-option" onclick="setLangGlobal('PL')">POLSKI</div>
                     </div>
 
-                    <div class="preview-container"><span class="preview-label" data-tr="PREVIEW">PREVIEW</span><div class="header-preview-box" onclick="togglePreviewFS()"><canvas id="preview-canvas"></canvas></div></div>
+                   <div class="preview-container"><span class="preview-label" data-tr="PREVIEW">PREVIEW</span><div class="header-preview-box" onclick="togglePreviewFS()"><canvas id="preview-canvas"></canvas></div></div>
+                    
+                    <button class="hide-btn" style="margin-right:10px; color:#f5a623; border-color:#f5a623;" onclick="handleShnopiaCode()">💾 CODE</button>
+                    
                     <button class="hide-btn" onclick="minimizePanel()" data-tr="HIDE">HIDE ME</button>
                 </div>
             </div>
@@ -543,10 +651,13 @@
                 <button class="tab-btn" onclick="switchTab('tab-help', this)" data-tr="HELP">HOW TO USE</button>
             </div>
 
-            <div id="tab-live" class="panel-content">
-                <div class="live-grid" id="live-grid">
-                    </div>
-            </div>
+        <div id="tab-live" class="panel-content">
+
+    <button class="momentary-btn" style="width:100%; margin-bottom:10px; padding:10px; border:1px dashed #004400;" onclick="autoRecordAll()">
+        🎥 GÉNÉRER LES PREVIEWS VIDÉO (AUTO-REC)
+    </button> 
+                <div class="live-grid" id="live-grid"></div>
+                </div>
 
             <div id="tab-wheel" class="panel-content visible">
                 <div class="wheel-wrapper"><div class="wheel-container" id="color-wheel"><div class="wheel-cursor" id="wheel-cursor"></div></div></div>
@@ -771,7 +882,7 @@
                     
                     <div class="action-box" onclick="triggerAction(this, 'mail')">
                         <div class="rossignol-header">
-                            <span class="rossignol-icon">🐦</span>
+                            <span class="rossignol-icon">🇫🇷🐦</span>
                             <span class="rossignol-title">Rossignol Grip Vibe Coding</span>
                             <span class="rossignol-icon">🗼🇫🇷</span>
                         </div>
@@ -799,7 +910,7 @@
 
 <a href="https://lightmyscreen.com/SLE V8 Final.html" download id="download-link" class="action-box" onclick="triggerDownload(this);">
                         <span class="box-title" data-tr="DL_TITLE">TÉLÉCHARGER L'APP</span>
-                        <span class="box-sub" id="dl-counter-display">OFFLINE ACCESS: CHECKING...</span>
+                        <span class="box-sub">VERSION OFFLINE</span>
                     </a>
                 </div>
             </div>
@@ -1065,55 +1176,154 @@
             document.getElementById('help-content').innerHTML = d.HELP_CONTENT;
         }
         
-        // --- LIVE PAD SYSTEM ---
+       // --- LIVE PAD SYSTEM ---
         const LIVE_SLOTS = 16;
         let liveMemory = new Array(LIVE_SLOTS).fill(null);
         let isRecording = false;
-        
+        let selectedPadIndex = -1; 
+
         function initLiveGrid() {
-            const grid = document.getElementById('live-grid');
-            for(let i=0; i<LIVE_SLOTS; i++) {
-                const slot = document.createElement('div'); slot.className = 'live-slot';
-                const pad = document.createElement('div'); pad.className = 'live-pad'; pad.id = `live-pad-${i}`; pad.onclick = () => recallLive(i);
-                const empty = document.createElement('span'); empty.className = 'empty-pad-text'; empty.innerText = "EMPTY";
-                pad.appendChild(empty);
-                const saveBtn = document.createElement('button'); saveBtn.className = 'live-save-btn momentary-btn'; saveBtn.id = `save-btn-${i}`; saveBtn.innerText = "SAVE"; saveBtn.onclick = (e) => { e.stopPropagation(); saveLive(i); };
-                slot.appendChild(pad); slot.appendChild(saveBtn); grid.appendChild(slot);
+    // --- NOUVEAU : Chargement depuis presets.js ---
+    if (typeof SHNOPIA_DEFAULTS !== 'undefined' && Array.isArray(SHNOPIA_DEFAULTS)) {
+        SHNOPIA_DEFAULTS.forEach((code, i) => {
+            if (i < LIVE_SLOTS) {
+                // On décode le string vers un objet
+                const decoded = decodeShnopiaCode(code);
+                if (decoded) {
+                    // Pour éviter des bugs, on fusionne ce décodage avec une copie "propre" de l'état par défaut
+                    // ou l'état actuel pour combler les trous.
+                    // Ici, on crée un objet qui servira de mémoire.
+                    // Important : liveMemory a besoin d'un objet complet pour bien fonctionner.
+                    // On va prendre 'state' actuel comme base, et écraser avec le preset.
+                    let base = JSON.parse(JSON.stringify(state));
+                    liveMemory[i] = Object.assign(base, decoded);
+                }
+            }
+        });
+    }
+    // ----------------------------------------------
+
+    const grid = document.getElementById('live-grid');
+    grid.innerHTML = '';
+    for(let i=0; i<LIVE_SLOTS; i++) {
+        const slot = document.createElement('div'); slot.className = 'live-slot';
+        
+        const pad = document.createElement('div'); 
+        pad.className = 'live-pad'; 
+        pad.id = `live-pad-${i}`; 
+        pad.onclick = () => recallLive(i);
+        
+        updatePadVisual(pad, liveMemory[i], i);
+
+        const saveBtn = document.createElement('button'); 
+        saveBtn.className = 'live-save-btn momentary-btn'; 
+        saveBtn.id = `save-btn-${i}`; 
+        saveBtn.innerText = "SAVE"; 
+        saveBtn.onclick = (e) => { e.stopPropagation(); saveLive(i); };
+        
+        slot.appendChild(pad); slot.appendChild(saveBtn); grid.appendChild(slot);
+    }
+}
+        
+        function updatePadVisual(el, mem, idx) {
+            el.innerHTML = '';
+            if(!mem) {
+                el.style.backgroundColor = '#001100';
+                el.style.border = '1px solid #004400';
+                el.style.boxShadow = 'inset 0 0 10px rgba(0,0,0,0.8)';
+                el.innerHTML = `<span class="empty-pad-text">EMPTY ${idx+1}</span>`;
+                return;
+            }
+            // Logique d'affichage si plein
+            if(mem.mode === 'WHEEL') {
+                const rgb = hsvToRgb(mem.hue, mem.sat, mem.val);
+                const hex = rgbToHex(rgb[0], rgb[1], rgb[2]);
+                el.style.backgroundColor = hex;
+                el.style.boxShadow = `0 0 10px ${hex}`;
+            } else if(mem.mode === 'CCT') {
+                const rgb = mem.whiteRgb;
+                const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+                el.style.backgroundColor = hex;
+                el.innerHTML = `<span style="color:#000; font-weight:900; font-size:10px;">${mem.kelvin}K</span>`;
+            } else {
+                el.style.backgroundColor = '#000';
+                el.style.border = '1px solid var(--lcd-on)';
+                let name = "FX";
+                if(mem.fxMode <= 20 && CINEMA_FX[mem.fxMode]) name = CINEMA_FX[mem.fxMode];
+                else if(SHNOPIA_FX[mem.fxMode-21]) name = SHNOPIA_FX[mem.fxMode-21];
+                el.innerHTML = `<span style="color:var(--lcd-on); font-size:8px; text-align:center;">${name}</span>`;
             }
         }
-        initLiveGrid();
 
         function saveLive(index) {
+            // Sécurité anti-spam
             if(isRecording) return;
             isRecording = true;
+
+            // Animation rouge sur le bouton (pendant les 2 secondes d'enregistrement)
             const btn = document.getElementById(`save-btn-${index}`);
             btn.classList.add('saving-red');
-            setTimeout(() => { btn.classList.remove('saving-red'); }, 1000);
+            setTimeout(() => { btn.classList.remove('saving-red'); }, 2000);
+            
+            // 1. Sauvegarde des données (Instantané)
             liveMemory[index] = JSON.parse(JSON.stringify(state));
+            
+            // 2. Sélectionne le pad immédiatement (Halo Vert)
+            recallLive(index);
+
+            // 3. Enregistrement Vidéo (2 secondes)
             const stream = canvas.captureStream(30); 
             const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' }); 
             const chunks = [];
+            
             recorder.ondataavailable = (e) => { if(e.data.size > 0) chunks.push(e.data); };
+            
             recorder.onstop = () => {
-                const blob = new Blob(chunks, { type: 'video/webm' }); const url = URL.createObjectURL(blob);
-                const pad = document.getElementById(`live-pad-${index}`); pad.innerHTML = '';
-                const video = document.createElement('video'); video.className = 'pad-video'; video.src = url; video.muted = true; video.loop = true; video.autoplay = true; video.playsInline = true;
-                pad.appendChild(video); video.play();
-                isRecording = false;
+                const blob = new Blob(chunks, { type: 'video/webm' }); 
+                const url = URL.createObjectURL(blob);
+                
+                // On met la vidéo dans le pad
+                const pad = document.getElementById(`live-pad-${index}`); 
+                pad.innerHTML = ''; // On efface le texte "EMPTY" ou l'ancien contenu
+                
+                const video = document.createElement('video'); 
+                video.className = 'pad-video'; 
+                video.src = url; 
+                video.muted = true; 
+                video.loop = true; 
+                video.autoplay = true; 
+                video.playsInline = true;
+                
+                pad.appendChild(video); 
+                video.play();
+                
+                isRecording = false; // On libère le verrou
             };
+            
             recorder.start(); 
-            setTimeout(() => { recorder.stop(); }, 2000); 
+            setTimeout(() => { recorder.stop(); }, 2000); // Stop après 2 secondes
         }
 
-        function recallLive(index) {
-            if(!liveMemory[index]) return;
-            state = JSON.parse(JSON.stringify(liveMemory[index]));
-            syncUI();
+   function recallLive(index) {
+            selectedPadIndex = index;
+            
+            // 1. GESTION DU HALO VERT (On l'applique TOUJOURS, même si le pad est vide)
             document.querySelectorAll('.live-pad').forEach(p => p.classList.remove('active-preset'));
-            document.getElementById(`live-pad-${index}`).classList.add('active-preset');
+            
+            const currentPad = document.getElementById(`live-pad-${index}`);
+            if(currentPad) currentPad.classList.add('active-preset');
+
+            // 2. CHARGEMENT DE LA MÉMOIRE (Seulement si elle existe)
+            if(liveMemory[index]) {
+                state = JSON.parse(JSON.stringify(liveMemory[index]));
+                syncUI();
+            }
         }
 
-        function saveMemory(index) {
+      
+
+             
+              function saveMemory(index) {
             const rgb = hsvToRgb(state.hue, state.sat, state.val); 
             const hex = rgbToHex(rgb[0], rgb[1], rgb[2]);
             state.savedColors[index] = hex; 
@@ -1394,7 +1604,15 @@
             requestAnimationFrame(render);
         }
 
-        window.switchTab = (id, btn) => { document.querySelectorAll('.panel-content').forEach(e => e.classList.remove('visible')); document.getElementById(id).classList.add('visible'); document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('active')); if(btn) btn.classList.add('active'); };
+window.switchTab = (id, btn) => { 
+            document.querySelectorAll('.panel-content').forEach(e => e.classList.remove('visible')); 
+            document.getElementById(id).classList.add('visible'); 
+            document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('active')); 
+            if(btn) btn.classList.add('active'); 
+            
+            // Correction : Recalculer la position du curseur couleur quand on ouvre l'onglet
+            if(id === 'tab-wheel') setTimeout(updateCursorVisuals, 50);
+        };
         
         window.setEffect = (id, el) => { 
             if (id === 0) { 
@@ -1667,49 +1885,96 @@
         };
 
         function syncUI() {
-            document.getElementById('val-sat-input').value = Math.round(state.sat); document.getElementById('val-kelvin').innerText = state.kelvin + "K"; document.getElementById('val-tint').innerText = state.tint;
-            document.getElementById('val-speed-input').value = state.speedCinema; document.getElementById('val-speed-shnopia-input').value = state.speedShnopia;
-            document.getElementById('val-text-size').innerText = state.textSize + "%"; document.getElementById('val-text-speed').innerText = state.textSpeed; document.getElementById('val-dimmer-input').value = state.dimmer;
+            // 1. Mise à jour des Textes et Valeurs simples
+            document.getElementById('val-sat-input').value = Math.round(state.sat); 
+            document.getElementById('val-kelvin').innerText = state.kelvin + "K"; 
+            document.getElementById('val-tint').innerText = state.tint;
+            document.getElementById('val-speed-input').value = state.speedCinema; 
+            document.getElementById('val-speed-shnopia-input').value = state.speedShnopia;
+            document.getElementById('val-text-size').innerText = state.textSize + "%"; 
+            document.getElementById('val-text-speed').innerText = state.textSpeed; 
+            document.getElementById('val-dimmer-input').value = state.dimmer;
             
-            document.getElementById('input-sat').value = state.sat; document.getElementById('input-kelvin').value = state.kelvin; document.getElementById('input-tint').value = state.tint;
-            document.getElementById('input-speed').value = state.speedCinema; document.getElementById('input-speed-shnopia').value = state.speedShnopia;
-            document.getElementById('input-text-size').value = state.textSize; document.getElementById('input-text-speed').value = state.textSpeed; document.getElementById('input-dimmer').value = state.dimmer;
+            // 2. Mise à jour des Sliders (Position physique)
+            document.getElementById('input-sat').value = state.sat; 
+            document.getElementById('input-kelvin').value = state.kelvin; 
+            document.getElementById('input-tint').value = state.tint;
+            document.getElementById('input-speed').value = state.speedCinema; 
+            document.getElementById('input-speed-shnopia').value = state.speedShnopia;
+            document.getElementById('input-text-size').value = state.textSize; 
+            document.getElementById('input-text-speed').value = state.textSpeed; 
+            document.getElementById('input-dimmer').value = state.dimmer;
             
-            const rgb = hsvToRgb(state.hue, state.sat, 100); updateRGBInputs(rgb);
-            const wRgb = applyTint(kelvinToRgb(state.kelvin), state.tint); updateWhiteUI(wRgb);
+            // 3. Mise à jour Couleur & Blanc (Inputs RGB et HEX)
+            const rgb = hsvToRgb(state.hue, state.sat, 100); 
+            updateRGBInputs(rgb);
+            // Force la mise à jour du champ HEX qui était oubliée
+            document.getElementById('hex-input').value = rgbToHex(rgb[0], rgb[1], rgb[2]);
 
+            const wRgb = applyTint(kelvinToRgb(state.kelvin), state.tint); 
+            updateWhiteUI(wRgb);
+
+            // 4. Modifieurs (Matrix)
             const gridInput = document.getElementById('input-grid-lvl'); gridInput.value = state.gridLevel; updateGridSlider(gridInput);
             const warpInput = document.getElementById('input-warp-lvl'); warpInput.value = state.warpLevel; updateWarpSlider(warpInput);
             const noiseInput = document.getElementById('input-noise-lvl'); noiseInput.value = state.noiseLevel; updateNoiseSlider(noiseInput);
             
-            document.querySelectorAll('.map-btn').forEach((btn, index) => {
-                // The OFF button is virtual (-1) so we handle it manually or skip
-                if(btn.innerText.includes("OFF")) {
-                    if(state.mapMode === -1) btn.classList.add('active-map');
-                    else btn.classList.remove('active-map');
-                } else {
-                    // Indices 0 to 13 map to other buttons
-                    // We need a way to map button index to mapMode.
-                    // Simplified: just update visual class in setMapMode
-                }
+            // --- CORRECTIONS VISUELLES (CLASSES ACTIVE) ---
+
+            // A. Boutons Kelvin (2700K, 3200K...)
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if(parseInt(btn.innerText) === state.kelvin) btn.classList.add('active');
             });
 
+            // B. Grilles d'Effets (Cinema & Shnopia)
+            // On retire la classe active de partout et on la remet sur le bon index
+            const allCards = document.querySelectorAll('.fx-card');
+            allCards.forEach(c => c.classList.remove('active'));
+            if(allCards[state.fxMode]) allCards[state.fxMode].classList.add('active');
+
+            // C. Matrice (Boutons de mapping)
+            document.querySelectorAll('.map-btn').forEach(b => b.classList.remove('active-map'));
+            if(state.mapMode === 14) {
+                // Cas spécial pour le bouton SET (Custom)
+                document.getElementById('btn-set').classList.add('active-map');
+            } else {
+                // Le mode -1 (OFF) est à l'index 0, le mode 0 à l'index 1, etc.
+                const mapBtns = document.querySelectorAll('.map-btn');
+                if(mapBtns[state.mapMode + 1]) mapBtns[state.mapMode + 1].classList.add('active-map');
+            }
+
+            // D. Interface Texte (Bouton ON/OFF)
             document.getElementById('text-content').value = state.textString;
             document.getElementById('input-text-color').value = state.textColor;
             document.getElementById('input-text-font').value = state.textFont;
             document.getElementById('input-text-effect').value = state.textEffect;
             const textLvlInput = document.getElementById('input-text-fx-lvl'); textLvlInput.value = state.textFxLvl; updateTextSlider();
+            
             const textToggle = document.getElementById('btn-text-toggle');
-            if(state.textOn) { textToggle.innerText = DICT[CURRENT_LANG].TEXT_ON; textToggle.classList.add('active'); } 
-            else { textToggle.innerText = DICT[CURRENT_LANG].TEXT_OFF; textToggle.classList.remove('active'); }
+            if(state.textOn) { 
+                textToggle.innerText = DICT[CURRENT_LANG].TEXT_ON; 
+                textToggle.classList.add('active'); 
+            } else { 
+                textToggle.innerText = DICT[CURRENT_LANG].TEXT_OFF; 
+                textToggle.classList.remove('active'); 
+            }
 
+            // E. Palette (Petits carrés de couleur FX)
+            updatePaletteUI();
+
+            // F. Fullscreen Button
             if (document.fullscreenElement) document.querySelector('.fullscreen-btn').classList.add('active');
             
+            // G. Rafraîchir les dégradés de couleurs des sliders
             initSliderStyles();
-            setTimeout(updateCursorVisuals, 100);
 
-            // SYNC FX PARAMS
+            // H. Params FX (Sliders A et B)
             [1, 2].forEach(id => updateFxParam(id, state['fxParam'+id]));
+
+            // I. Curseur Roue chromatique (Petit délai pour être sûr que le DOM est prêt)
+            setTimeout(updateCursorVisuals, 50);
+        
         }
         
         initSliderStyles();
@@ -1749,37 +2014,19 @@
             });
         })();
 
-// --- NEW DOWNLOAD & COUNTER LOGIC (CORRECTED) ---
-        window.refreshDlCount = () => {
-            // On vise une clé spécifique pour la V8
-            fetch('https://api.counterapi.dev/v1/shnopia_sle/dl_v8_final/')
-            .then(r => r.json())
-            .then(d => {
-                const el = document.getElementById('dl-counter-display');
-                // Si la clé n'existe pas encore, d.count est undefined, on met 0
-                const count = (d.count !== undefined) ? d.count : 0;
-                if(el) el.innerText = "OFFLINE ACCESS: #" + count;
-            })
-            .catch(e => {
-                // Si erreur (bloqueur de pub ou réseau), on affiche N/A proprement
-                const el = document.getElementById('dl-counter-display');
-                if(el) el.innerText = "OFFLINE ACCESS: N/A"; 
-            });
-        };
+// --- MODIFICATION: SUPPRESSION DU COMPTEUR DE TÉLÉCHARGEMENT ---
 
-        window.triggerDownload = (btn) => {
+        // On vide la fonction de rafraichissement pour qu'elle ne cherche plus l'API
+        window.refreshDlCount = () => {};
+
+        // On simplifie le déclencheur pour ne faire que l'animation visuelle (Flash)
+        window.triggerDownload = (el) => {
             // Animation visuelle
-            btn.classList.add('flash'); 
-            setTimeout(()=>btn.classList.remove('flash'), 500);
+            el.classList.add('flash'); 
+            setTimeout(()=>el.classList.remove('flash'), 500);
             
-            // Incrémentation (+1)
-            fetch('https://api.counterapi.dev/v1/shnopia_sle/dl_v8_final/up')
-            .then(r => r.json())
-            .then(d => {
-                const el = document.getElementById('dl-counter-display');
-                if(el && d.count !== undefined) el.innerText = "OFFLINE ACCESS: #" + d.count;
-            })
-            .catch(e => console.log("Compteur bloqué par le navigateur"));
+            // Le return true permet au lien <a> de lancer le téléchargement naturellement
+            return true;
         };
 
         // Override setLangGlobal pour afficher le compteur au changement de langue
@@ -1821,32 +2068,44 @@
             }
         };
 
-    // Gère le message caché (le bouton qui "ne sert à rien")
-        window.triggerDevMsg = (el) => {
-            el.classList.add('flash');
-            setTimeout(() => el.classList.remove('flash'), 300);
-            
-            const title = el.querySelector('#dev-title');
-            const sub = el.querySelector('#dev-sub');
-            
-            // Étape 1 : On efface tout visuellement (Fade out)
-            title.style.transition = 'opacity 0.2s';
-            sub.style.transition = 'opacity 0.2s';
-            title.style.opacity = '0';
-            sub.style.opacity = '0';
-            
-            setTimeout(() => {
-                // Étape 2 : On supprime le titre du flux (il ne prend plus de place)
-                title.style.display = 'none';
+  // Gère le message caché (1er clic = texte, 2ème clic = lien)
+    window.triggerDevMsg = (el) => {
+        // Animation Flash à chaque clic
+        el.classList.add('flash');
+        setTimeout(() => el.classList.remove('flash'), 300);
 
-                // Étape 3 : On change le texte et on applique le style "Gros Message"
-                sub.innerText = "LOL il ne sert à rien pour l'instant ce bouton, mais recommences.";
-                sub.classList.add('dev-msg-active');
-                
-                // Étape 4 : Réapparition (Fade in)
-                sub.style.opacity = '1';
-            }, 300);
-        };
+        // LOGIQUE 2ÈME CLIC : Si le message est déjà révélé, on ouvre le lien
+        if (el.classList.contains('is-revealed')) {
+            window.open("https://www.facebook.com/61584293050053", "_blank");
+            return;
+        }
+
+        // LOGIQUE 1ER CLIC : On révèle le message
+        el.classList.add('is-revealed'); // On marque la case comme "lue"
+        
+        const title = el.querySelector('#dev-title');
+        const sub = el.querySelector('#dev-sub');
+        
+        // Étape 1 : Fade out
+        title.style.transition = 'opacity 0.2s';
+        sub.style.transition = 'opacity 0.2s';
+        title.style.opacity = '0';
+        sub.style.opacity = '0';
+        
+        setTimeout(() => {
+            // Étape 2 : Masquer le titre
+            title.style.display = 'none';
+
+            // Étape 3 : Changer le texte
+            sub.innerHTML = "SUIVEZ LE PROJET SUR FACEBOOK :<br><span style='text-decoration:underline; font-size:10px;'>facebook.com/61584293050053</span><br><br>";
+            
+            sub.classList.add('dev-msg-active');
+            sub.style.flexDirection = 'column'; 
+            
+            // Étape 4 : Fade in
+            sub.style.opacity = '1';
+        }, 300);
+    };
 
         // Gère le téléchargement (remplace l'ancienne fonction triggerDownload)
         window.triggerDownload = (el) => {
@@ -1866,6 +2125,201 @@
             // Le return true permet au lien <a> de lancer le téléchargement naturellement
             return true;
         };
+
+
+/* --- SHNOPIA CODE SYSTEM V2 (REFRACTORISÉ POUR PRESETS EXTERNES) --- */
+
+const CODE_MAP = {
+    m: 'mode', k: 'kelvin', t: 'tint', h: 'hue', s: 'sat', v: 'val',
+    d: 'dimmer', fm: 'fxMode', sc: 'speedCinema', ss: 'speedShnopia',
+    p1: 'fxParam1', p2: 'fxParam2', mm: 'mapMode',
+    to: 'textOn', ts: 'textString', tsz: 'textSize', tsp: 'textSpeed',
+    tc: 'textColor', tf: 'textFont', te: 'textEffect', tfl: 'textFxLvl',
+    gl: 'gridLevel', wl: 'warpLevel', nl: 'noiseLevel'
+};
+
+// 1. NOUVELLE FONCTION : Juste le décodage (Ne touche pas à l'écran)
+function decodeShnopiaCode(str) {
+    try {
+        if (!str || !str.startsWith("SLE8:")) return null;
+
+        // Extraction et décodage Base64
+        const b64 = str.split("SLE8:")[1];
+        const json = decodeURIComponent(escape(window.atob(b64)));
+        const mini = JSON.parse(json);
+
+        let decodedState = {};
+
+        // Reconstruction des clés complètes via la MAP
+        for (let key in mini) {
+            if (CODE_MAP[key]) decodedState[CODE_MAP[key]] = mini[key];
+        }
+
+        // Reconstruction des logiques booléennes (Grid/Warp/Noise)
+        // On le fait ici pour que l'objet soit "propre" et prêt à l'emploi
+        if (decodedState.gridLevel !== undefined) decodedState.gridActive = decodedState.gridLevel > 1;
+        if (decodedState.warpLevel !== undefined) decodedState.warpActive = decodedState.warpLevel > 0;
+        if (decodedState.noiseLevel !== undefined) decodedState.noiseActive = decodedState.noiseLevel > 0;
+
+        return decodedState;
+    } catch (e) {
+        console.warn("Erreur silencieuse décodage:", e);
+        return null; // Retourne null si le code est invalide
+    }
+}
+
+// 2. FONCTION MODIFIÉE : Applique le code à l'application (Utilise la fonction ci-dessus)
+function loadCode(str) {
+    const newState = decodeShnopiaCode(str);
+
+    if (newState) {
+        // Application au State Global
+        // On utilise Object.assign pour fusionner le nouveau state avec l'actuel
+        Object.assign(state, newState);
+
+        // Mise à jour de l'interface
+        syncUI();
+
+        // Feedback Visuel (Bouton Code)
+        const btn = document.querySelector('.hide-btn');
+        if (btn) {
+            const old = btn.innerHTML;
+            btn.innerHTML = "💾 CHARGÉ!";
+            setTimeout(() => btn.innerHTML = old, 1500);
+        }
+        
+        // Feedback si via QR Upload
+        return true; 
+    } else {
+        alert("❌ ERREUR: Code corrompu ou format invalide.");
+        return false;
+    }
+}
+
+// --- RESTE DU SYSTEME QR CODE (INCHANGÉ MAIS DOIT ETRE PRÉSENT) ---
+
+/* --- VERSION TEXTE UNIQUEMENT (SANS QR CODE) --- */
+window.handleShnopiaCode = () => {
+    const code = generateCode();
+    const modal = document.getElementById('qr-modal-overlay');
+    const textArea = document.getElementById('code-text-area');
+    
+    // Remplir le texte
+    textArea.value = code;
+    
+    // Afficher la modale
+    modal.style.display = 'flex';
+    
+    // Sélectionner le texte automatiquement pour faciliter la copie
+    textArea.select();
+};
+
+window.closeQrModal = (force) => {
+    if(force === true || force.target.id === 'qr-modal-overlay') {
+        document.getElementById('qr-modal-overlay').style.display = 'none';
+        // Vérifie si l'utilisateur a collé un code manuellement
+        const content = document.getElementById('code-text-area').value;
+        const currentGenerated = generateCode();
+        // On ne charge que si c'est un code valide ET différent de celui actuel
+        if(content && content.startsWith("SLE8:") && content !== currentGenerated) {
+            loadCode(content);
+        }
+    }
+};
+
+window.copyCodeToClip = () => {
+    const textArea = document.getElementById('code-text-area');
+    textArea.select();
+    document.execCommand('copy');
+    const btn = document.querySelector('.qr-btn-copy');
+    const oldText = btn.innerText;
+    btn.innerText = "COPIÉ !";
+    setTimeout(() => btn.innerText = oldText, 1000);
+};
+
+
+/* --- AUTO RECORDER SYSTEM --- */
+window.autoRecordAll = async () => {
+    const btn = document.querySelector('button[onclick="autoRecordAll()"]');
+    if(btn) btn.disabled = true;
+
+    // Sauvegarde de l'état actuel pour le restaurer à la fin
+    const originalState = JSON.parse(JSON.stringify(state));
+    const originalPad = selectedPadIndex;
+
+    for(let i=0; i<LIVE_SLOTS; i++) {
+        // On ne génère que si le slot est utilisé (pas null)
+        if(liveMemory[i]) {
+            if(btn) btn.innerText = `ENREGISTREMENT PAD ${i+1}/${LIVE_SLOTS}...`;
+            
+            // 1. On charge le preset
+            recallLive(i);
+            
+            // 2. On attend un tout petit peu que le moteur graphique se mette à jour
+            await new Promise(r => setTimeout(r, 100));
+
+            // 3. On lance l'enregistrement (Code adapté de saveLive)
+            const stream = canvas.captureStream(30);
+            const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+            const chunks = [];
+            
+            recorder.ondataavailable = (e) => { if(e.data.size > 0) chunks.push(e.data); };
+            
+            // Promesse qui attend la fin de l'enregistrement de ce pad
+            await new Promise((resolve) => {
+                recorder.onstop = () => {
+                    const blob = new Blob(chunks, { type: 'video/webm' });
+                    const url = URL.createObjectURL(blob);
+                    
+                    const pad = document.getElementById(`live-pad-${i}`);
+                    // Nettoyage visuel (supprime le texte FX pour mettre la vidéo)
+                    // On garde juste le halo si actif
+                    const isActive = pad.classList.contains('active-preset');
+                    pad.innerHTML = ''; 
+                    
+                    const video = document.createElement('video');
+                    video.className = 'pad-video';
+                    video.src = url;
+                    video.muted = true;
+                    video.loop = true;
+                    video.autoplay = true;
+                    video.playsInline = true;
+                    
+                    pad.appendChild(video);
+                    video.play();
+                    
+                    resolve(); // On passe au suivant
+                };
+                
+                recorder.start();
+                // On enregistre 2 secondes par pad
+                setTimeout(() => { recorder.stop(); }, 2000);
+            });
+        }
+    }
+
+    // Restauration
+    if(originalPad >= 0) recallLive(originalPad);
+    else Object.assign(state, originalState); // Ou on remet l'état d'origine si aucun pad n'était actif
+    
+    syncUI();
+    if(btn) {
+        btn.innerText = "✅ TERMINÉ";
+        btn.disabled = false;
+        setTimeout(() => btn.innerText = "🎥 GÉNÉRER LES PREVIEWS VIDÉO (AUTO-REC)", 2000);
+    }
+};
+
+function generateCode() {
+    let mini = {};
+    for(let key in CODE_MAP) mini[key] = state[CODE_MAP[key]];
+    const json = JSON.stringify(mini);
+    const b64 = btoa(unescape(encodeURIComponent(json)));
+    return "SLE8:" + b64;
+}
+
+
+initLiveGrid();
 
     </script>
 </body>
