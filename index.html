@@ -1883,17 +1883,25 @@ const noise = (x, y) => {
         }
 
         function updateWheel(e) {
-            const rect = wheel.getBoundingClientRect(); 
-            const radius = rect.width / 2;
+            // Calculer les coordonnées globales pour le centrage (inclut bordures)
+            const rect = wheel.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            // Calculer le rayon INTERNE (exclut la bordure noire)
+            const radius = wheel.clientWidth / 2;
             
             if (radius <= 0) return;
 
             const x = e.touches ? e.touches[0].clientX : e.clientX; 
             const y = e.touches ? e.touches[0].clientY : e.clientY;
             
-            const dx = x - (rect.left + radius); 
-            const dy = y - (rect.top + radius); 
-            const dist = Math.min(Math.sqrt(dx*dx + dy*dy), radius);
+            const dx = x - centerX; 
+            const dy = y - centerY; 
+            
+            // On limite la distance au rayon interne uniquement
+            const rawDist = Math.sqrt(dx*dx + dy*dy);
+            const dist = Math.min(rawDist, radius);
             
             let ang = Math.atan2(dy, dx) * (180 / Math.PI); 
             if(ang < 0) ang += 360;
