@@ -588,7 +588,7 @@
                 <button class="activate-btn momentary-btn" onclick="activateStatic('WHEEL')" data-tr="ACTIVATE_COLOR">ACTIVER LA COULEUR</button>
                 
                 <div class="memory-section">
-                    <div class="memory-label" data-tr="MEMORIES">MÉMOIRES (HAUT: CHARGER / BAS: SAUVER)</div>
+                    <div class="memory-label" data-tr="MEMORIES">Mémoriser une couleur : SAVE puis bouton</div>
                     <div class="memory-row" id="color-memories"></div>
                 </div>
             </div>
@@ -633,7 +633,7 @@
                 <button class="activate-btn momentary-btn" onclick="activateStatic('CCT')" data-tr="ACTIVATE_WHITE">ACTIVER LE BLANC</button>
                 
                 <div class="memory-section">
-                    <div class="memory-label" data-tr="MEMORIES">MÉMOIRES (HAUT: CHARGER / BAS: SAUVER)</div>
+                    <div class="memory-label" data-tr="MEMORIES">Mémoriser une couleur: SAVE puis case </div>
                     <div class="memory-row" id="white-memories"></div>
                 </div>
             </div>
@@ -855,7 +855,7 @@
                INTRO_HINT: "CLIQUEZ POUR CONTINUER",
                LIVE: "LIVE", COLOR: "COULEUR", WHITE: "BLANC", FX_TITLE: "FX", MATRIX: "MATRICE", TEXT: "TEXTE", HELP: "AIDE",
                SATURATION: "SATURATION", RED: "ROUGE", GREEN: "VERT", BLUE: "BLEU",
-               RECALL_WHITE: "RAPPEL REGLAGES BLANC", ACTIVATE_COLOR: "ACTIVER LA COULEUR", MEMORIES: "MÉMOIRES (HAUT: CHARGER / BAS: SAUVER)",
+               RECALL_WHITE: "RAPPEL REGLAGES BLANC", ACTIVATE_COLOR: "ACTIVER LA COULEUR", MEMORIES: "Mémoriser une couleur: SAVE puis case",
                KELVIN: "TEMPERATURE (KELVIN)", TINT: "TEINTE (G/M)", MANUAL_WHITE: "MANUEL BLANC", ACTIVATE_WHITE: "ACTIVER LE BLANC",
                SPEED: "VITESSE", COLOR_OVERRIDE: "FORCER COULEUR (CLIQUEZ POUR REMPLACER)",
                PRESETS: "PRESETS", MODIFIERS: "MODIFIERS",
@@ -915,7 +915,27 @@
             if(d.INTRO_HINT) document.getElementById('intro-hint').innerText = d.INTRO_HINT;
         }
 
+        // --- SHNOPIA WAKE LOCK (ANTI-DODO) ---
+        let wakeLock = null;
+        async function activateWakeLock() {
+            if ('wakeLock' in navigator) {
+                try {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('🔒 SHNOPIA WAKE LOCK : ACTIVÉ (Pas de dodo !)');
+                } catch (err) {
+                    console.error(`Oups, le Wake Lock a échoué: ${err.name}, ${err.message}`);
+                }
+            }
+        }
+        // Si on change d'onglet et qu'on revient, on réactive le verrou !
+        document.addEventListener('visibilitychange', async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') {
+                await activateWakeLock();
+            }
+        });
+
         overlay.addEventListener('click', () => {
+            activateWakeLock(); // <--- ON LANCE LE CAFÉ ICI !
             setLangGlobal(currentIntroLang);
             switchTab('tab-wheel', document.querySelector('.tab-btn:nth-child(2)')); 
             overlay.style.opacity = '0';
@@ -1746,8 +1766,10 @@ const noise = (x, y) => {
             state.textOn = !state.textOn; const d = DICT[CURRENT_LANG]; const btn = document.getElementById('btn-text-toggle'); 
             if(state.textOn) { btn.innerText = d.TEXT_ON; btn.classList.add('active'); state.textPos = textCanvas.width; } else { btn.innerText = d.TEXT_OFF; btn.classList.remove('active'); } 
         };
-        window.minimizePanel = () => { document.getElementById('main-panel').classList.add('hidden'); };
-        window.restorePanel = () => { document.getElementById('main-panel').classList.remove('hidden'); };
+        // SHNOPIA MAGIC : On cache la souris quand le panel est caché !
+        window.minimizePanel = () => { document.getElementById('main-panel').classList.add('hidden'); document.body.style.cursor = 'none'; };
+        window.restorePanel = () => { document.getElementById('main-panel').classList.remove('hidden'); document.body.style.cursor = 'auto'; };
+        
         function handleGlobalClick(e) { 
             const panel = document.getElementById('main-panel'); const langMenu = document.getElementById('lang-menu');
             if(langMenu.classList.contains('show') && e.target.className !== 'lang-icon') langMenu.classList.remove('show');
