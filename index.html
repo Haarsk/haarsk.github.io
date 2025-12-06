@@ -2090,7 +2090,7 @@ const noise = (x, y) => {
 
         window.triggerDownload = (el) => { el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'), 500); return true; };
 
-        const CODE_MAP = { m: 'mode', k: 'kelvin', t: 'tint', h: 'hue', s: 'sat', v: 'val', d: 'dimmer', s: 'speed', fm: 'fxMode', p1: 'fxParam1', p2: 'fxParam2', p3: 'fxParam3', mm: 'mapMode', to: 'textOn', ts: 'textString', tsz: 'textSize', tsp: 'textSpeed', tc: 'textColor', tf: 'textFont', te: 'textEffect', tfl: 'textFxLvl', gl: 'gridLevel', wl: 'warpLevel', nl: 'noiseLevel' };
+                const CODE_MAP = { m: 'mode', k: 'kelvin', t: 'tint', h: 'hue', s: 'sat', v: 'val', d: 'dimmer', s: 'speed', fm: 'fxMode', p1: 'fxParam1', p2: 'fxParam2', p3: 'fxParam3', pa: 'paletteActive', mm: 'mapMode', to: 'textOn', ts: 'textString', tsz: 'textSize', tsp: 'textSpeed', tc: 'textColor', tf: 'textFont', te: 'textEffect', tfl: 'textFxLvl', gl: 'gridLevel', wl: 'warpLevel', nl: 'noiseLevel' };
 
         function decodeShnopiaCode(str) {
             try {
