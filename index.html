@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Orbitron:wght@500;900&family=Black+Ops+One&display=swap" rel="stylesheet">
  
     <script src="presets.js"></script>
-    <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "a4b45e69b4db4a1b8b592a373a7aa566"}'></script><!-- End Cloudflare Web Analytics -->
+    <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "c5c00e171f1d4a658a383cb6c76d7ec2"}'></script><!-- End Cloudflare Web Analytics -->
 <style>
         /* CORE VARIABLES */
         :root { 
@@ -525,7 +525,10 @@
         <div class="control-panel" id="main-panel" onclick="event.stopPropagation()">
             <div class="drag-bar" id="drag-handle"><div class="grip-lines"></div></div>
             <div class="panel-header">
-                <span class="app-title">Shnopia Light Engine V8.5</span>
+                <div style="display:flex; flex-direction:column; margin-right:auto; justify-content:center;">
+                    <span style="font-family: 'Orbitron'; font-weight: 900; font-size: 10px; letter-spacing: 1px; color: #00FFFF; text-shadow: 0 0 8px #00FFFF; line-height: 1.2;">Rossignol Grip Vibe Coding</span>
+                    <span class="app-title" style="margin-right: 0; font-size: 10px; line-height: 1.2;">Shnopia Light Engine V8.5</span>
+                </div>
                 
                 <div class="header-controls">
                     <span class="lang-icon" onclick="toggleLangMenu(event)">🌍</span>
@@ -812,7 +815,7 @@
             </div>
 
             <div class="panel-footer">
-                <div><div class="label-row"><span data-tr="DIMMER">INTENSITÉ</span><input type="number" class="lcd-input" id="val-dimmer-input" value="100" min="0" max="100"></div><input type="range" min="0" max="100" value="100" id="input-dimmer"></div>
+                <div><div class="label-row"><span data-tr="DIMMER">INTENSITÉ</span><input type="number" class="lcd-input" id="val-dimmer-input" value="75" min="0" max="100"></div><input type="range" min="0" max="100" value="75" id="input-dimmer"></div>
                 <div class="footer-buttons">
                     <button class="led-btn blackout-btn" id="btn-blackout" onclick="toggleBlackout()">BLACKOUT</button>
                     <button class="led-btn fullscreen-btn momentary-btn" onclick="toggleFS()" data-tr="FULLSCREEN">FULL SCREEN</button>
@@ -981,7 +984,7 @@ const noise = (x, y) => {
         let CURRENT_LANG = 'FR';
         let state = {
             mode: 'WHEEL', kelvin: 3200, tint: 0, hue: 0, sat: 100, val: 100,
-            dimmer: 100, blackout: false, fxMode: 0, 
+            dimmer: 75, blackout: false, fxMode: 0, 
             speed: 4, fxParam1: 50, fxParam2: 50, fxParam3: 50, mapMode: -1, time: 0, textTime: 0, 
             textOn: false, textString: "Rossignol Grip Vibe Coding", 
             textSize: 22, textSpeed: 1, textColor: "#ffffff", textPos: 0, 
