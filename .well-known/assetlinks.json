@@ -1,8 +1,12 @@
-[{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "io.github.haarsk.twa",
-        "sha256_cert_fingerprints": ["DE:F0:81:9B:81:3C:1B:F3:C7:A0:16:19:56:ED:DB:4C:F0:DF:2D:15:BD:61:22:EE:67:C6:AA:08:A3:BD:26:C9"]
-      }
-    }]
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "io.github.haarsk.twa",
+      "sha256_cert_fingerprints": [
+        "73:BD:C2:7E:63:8F:12:C7:DA:D5:A8:0F:07:D3:8A:C9:71:03:D9:59:5E:32:E3:06:6E:0E:A1:77:52:F9:33:C4"
+      ]
+    }
+  }
+]
